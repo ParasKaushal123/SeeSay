@@ -16,3 +16,5 @@ research/data/
 *.joblib
 *.npz
 *.safetensors
+research
+IMPLEMENTATION.md
