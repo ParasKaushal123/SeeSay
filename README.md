@@ -1,1131 +1,296 @@
-# Awesome-Radiology-Report-Generation
+<a name="top"></a>
 
-[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+# SeeSay: Evidence-Checked Chest X-Ray Report Generation
 
-We collect existing papers on radiology report generation that have been published in prominent conferences and journals. If you find this helpful, please consider citing the following reference.
-```
-@InProceedings{cvpr-mlrg-2025,
-    author    = {Liu, Kang and Ma, Zhuoqi and Kang, Xiaolu and Li, Yunan and Xie, Kun and Jiao, Zhicheng and Miao, Qiguang},
-    title     = {Enhanced Contrastive Learning with Multi-view Longitudinal Data for Chest X-ray Report Generation},
-    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-    month     = {June},
-    year      = {2025},
-    pages     = {10348-10359}
-}
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Transformers](https://img.shields.io/badge/🤗%20Transformers-4.40%2B-yellow.svg)](https://huggingface.co/docs/transformers)
+[![LightGBM](https://img.shields.io/badge/LightGBM-4.3%2B-brightgreen.svg)](https://lightgbm.readthedocs.io/)
+[![Dataset](https://img.shields.io/badge/Dataset-IU%20X--Ray-orange.svg)](https://openi.nlm.nih.gov/)
+[![Tests](https://img.shields.io/badge/tests-26%20passed-brightgreen.svg)](#-testing--quality-assurance)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Hardware](https://img.shields.io/badge/Target%20GPU-RTX%205050%20%7C%20Kaggle%20T4-9cf.svg)](#-hardware-profile)
 
-@InProceedings{aaai-priorrg-2026,
-    title={PriorRG: Prior-Guided Contrastive Pre-training and Coarse-to-Fine Decoding for Chest X-ray Report Generation},
-    volume={40},
-    url={https://ojs.aaai.org/index.php/AAAI/article/view/37657},
-    DOI={10.1609/aaai.v40i9.37657},
-    number={9},
-    booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
-    author={Liu, Kang and Ma, Zhuoqi and Fang, Zikang and Li, Yunan and Xie, Kun and Miao, Qiguang},
-    year={2026},
-    month={Mar.},
-    pages={7206-7214}
-}
+⭐ **SeeSay** shifts Radiology Report Generation (RRG) from pure autoregressive language generation to an **evidence-checked decision framework**, addressing the two most severe clinical failure modes in medical vision-language models: **invented abnormalities on normal studies (hallucinations)** and **omitted critical findings**.
 
-@misc{2026-cogaze,
-      title={Seeing Like Radiologists: Context- and Gaze-Guided Vision-Language Pretraining for Chest X-rays}, 
-      author={Kang Liu and Zhuoqi Ma and Siyu Liang and Yunan Li and Xiyue Gao and Chao Liang and Kun Xie and Qiguang Miao},
-      year={2026},
-      eprint={2603.26049},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2603.26049}, 
-}
-```
+---
 
 ## Table of Contents
-
-- [Foundation Models for Medicine](#Foundation-Models-for-Medicine)
-- [Papers](#papers)
-  - [2026](#2026)
-  - [2025](#2025)
-  - [2024](#2024)
-  - [2023](#2023)
-  - [2022](#2022)
-  - [2021](#2021)
-  - [2020](#2020)
-- [Survey](#survey)
-- [Dataset](#Dataset)
-- [Metrics](#Metrics)
-- [Other Resources](#other-resources)
-- [Tools](#Tools)
-
-
-## Foundation Models for Medicine
-- CheXagent: Towards a Foundation Model for Chest X-Ray Interpretation (**arXiv'2401**) [[paper](https://stanford-aimi.github.io/chexagent.html)][[code](https://github.com/Stanford-AIMI/CheXagent)]
-- XrayGPT: Chest Radiographs Summarization using Large Medical Vision-Language Models (**ACLW'24**)[[paper](https://aclanthology.org/2024.bionlp-1.35.pdf)][[code](https://github.com/mbzuai-oryx/XrayGPT)]
-- Unlocking the Power of Spatial and Temporal Information in Medical Multimodal Pre-training (**ICML'24**) [[paper](https://arxiv.org/pdf/2405.19654)][[code](https://github.com/SVT-Yang/MedST)]
-- A generalist vision--language foundation model for diverse biomedical tasks (**Nature Medicine'24**)[[paper](https://www.nature.com/articles/s41591-024-03185-2)][[code](https://github.com/taokz/BiomedGPT)]
-- ECAMP: Entity-centered Context-aware Medical Vision Language Pre-training (**arXiv'2311**)[[paper](https://arxiv.org/pdf/2312.13316)][[code](https://github.com/ToniChopp/ECAMP)]
-- CXR-CLIP: Toward Large Scale Chest X-ray Language-Image Pre-training (**MICCAI'23**)[[paper](https://link.springer.com/chapter/10.1007/978-3-031-43895-0_10)][[code](https://github.com/kakaobrain/cxr-clip)]
-- GLoRIA: A Multimodal Global-Local Representation Learning Framework for Label-efficient Medical Image Recognition (**ICCV'21**)[[paper](https://openaccess.thecvf.com/content/ICCV2021/papers/Huang_GLoRIA_A_Multimodal_Global-Local_Representation_Learning_Framework_for_Label-Efficient_Medical_ICCV_2021_paper.pdf)][[code](https://github.com/marshuang80/gloria)]
-- CXR-LLAVA: a multimodal large language model for interpreting chest X-ray images (**arXiv'2310**)[[paper](https://arxiv.org/pdf/2310.18341)][[code](https://github.com/ECOFRI/CXR_LLAVA)]
-- LLaVA-OneVision: Easy Visual Task Transfer (**arXiv'2408**)[[paper](https://arxiv.org/pdf/2408.03326)][[code](https://llava-vl.github.io/blog/2024-08-05-llava-onevision/)]
-- Advancing Medical Radiograph Representation Learning: A Hybrid Pre-training Paradigm with Multilevel Semantic Granularity (**arXiv'2410**) [[paper](https://arxiv.org/pdf/2410.00448)]
-- MedImageInsight: An Open-Source Embedding Model for General Domain Medical Imaging (**arXiv'2410**)[[paper](https://arxiv.org/abs/2410.06542)]
-- BioBridge: Bridging Biomedical Foundation Models via Knowledge Graphs (**ICLR'24**)[[paper](https://arxiv.org/pdf/2310.03320)][[code](https://github.com/RyanWangZf/BioBridge)]
-- Eye-gaze Guided Multi-modal Alignment for Medical Representation Learning (**NIPS'24**) [[paper](https://openreview.net/pdf?id=0bINeW40u4)]
-- Advancing human-centric AI for robust X-ray analysis through holistic self-supervised learning (**arXiv'2405**)[[paper](https://arxiv.org/pdf/2405.01469)]
-- MAIRA-2: Grounded Radiology Report Generation (**arXiv'2406**)[[paper](https://arxiv.org/abs/2406.04449)]
-- A clinically accessible small multimodal radiology model and evaluation metric for chest X-ray findings (**Nature Communications'25**)[[paper](https://www.nature.com/articles/s41467-025-58344-x)]
-
-
-
-
-
-## Papers
-### 2026
-**Nature'26**
-- Merlin: A Computed Tomography Vision–Language Foundation Model and Dataset [[paper](https://www.nature.com/articles/s41586-026-10181-8)][[code](https://github.com/StanfordMIMI/Merlin)]
-
-**Nature Biomedical Engineering'26**
-- A multimodal vision–language model for generalizable annotation-free pathology localization [[paper](https://github.com/YH0517/AFLoc)]
-
-**Nature Communications'26**
-- Advancing human-centric AI for robust X-ray analysis through holistic self-supervised learning [[paper](https://www.nature.com/articles/s41467-026-76076-4)]
-
-**npj Digital Medicine'26**
-- Grounded report generation for enhancing ophthalmic ultrasound interpretation using Vision-Language Segmentation models [[paper](https://www.nature.com/articles/s41746-025-02300-y)]
-- A robust vision language model for molecular status prediction and radiology report generation in adult-type diffuse gliomas [[paper](https://www.nature.com/articles/s41746-026-02581-x_reference.pdf)]
-- An explainable generative AI system for video-to-report generation in capsule endoscopy [[paper](https://www.nature.com/articles/s41746-026-03079-2_reference.pdf)]
-
-**TPAMI'26**
-- Advancing In-Context Learning for Efficient and Stable Medical Report Generation [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=11503684)]
-
-**ICLR'26**
-- Learning Self-Critiquing Mechanisms for Region-Guided Chest X-Ray Report Generation [[paper](https://openreview.net/forum?id=6sOSwgCmpH)]
-- Rethinking Radiology Report Generation: From Narrative Flow to Topic-Guided Findings [[paper](https://openreview.net/forum?id=nV3SAjFlyv)]
-
-**ICML'26**
-- The Double Dilemma in Multi-Task Radiology Report Generation: A Gradient Dynamics Analysis and Solution [[paper](https://arxiv.org/pdf/2605.22635)][[code](https://github.com/vpsg-research/CAME-Grad)]
-
-**CVPR'26**
-- X-WIN: Building Chest Radiograph World Model via Predictive Sensing [[paper](https://arxiv.org/pdf/2511.14918)][[code](https://github.com/RPIDIAL/X-WIN)]
-- BiOTPrompt: Bidirectional Optimal Transport Guided Prompting for Disease Evolution-aware Radiology Report Generation [[paper](https://cvpr.thecvf.com/virtual/2026/poster/38806)][[code](https://github.com/TengfeiLiu966/BiOTPrompt)]
-- CURE: Curriculum-guided Multi-task Training for Reliable Anatomy Grounded Report Generation [[paper](https://arxiv.org/pdf/2601.15408)]
-- SAT-RRG: LLM-Guided Self-Adaptive Training for Radiology Report Generation with Token-Level Push–Pull Optimization [[paper](https://cvpr.thecvf.com/virtual/2026/poster/37552)]
-- PETAR: Localized Findings Generation with Mask-Aware Vision-Language Modeling for PET Automated Reporting [[paper](https://cvpr.thecvf.com/virtual/2026/poster/39104)]
-- TIM: Temporal Decoupling with Iterative Mutual-Refinement Model for Longitudinal Radiology Report Generation [[paper](https://openaccess.thecvf.com/content/CVPR2026/papers/Dong_TIM_Temporal_Decoupling_with_Iterative_Mutual-Refinement_Model_for_Longitudinal_Radiology_CVPR_2026_paper.pdf)][[code](https://github.com/yihengd/TIM/tree/main/)]
-- MedLIME: A Distribution-Aligned and Evidence-Supported Framework for Medical Saliency Explanation [[paper](https://openaccess.thecvf.com/content/CVPR2026/papers/Magazine_MedLIME_A_Distribution-Aligned_and_Evidence-Supported_Framework_for_Medical_Saliency_Explanations_CVPR_2026_paper.pdf)]
-- F2-Assist: Multi-Phase Fetal Growth Forecast and Report Generation from Ultrasound Examination [[paper](https://openaccess.thecvf.com/content/CVPR2026/papers/Pu_F2-Assist_Multi-Phase_Fetal_Growth_Forecast_and_Report_Generation_from_Ultrasound_CVPR_2026_paper.pdf)]
-- Phrase-grounded APO for Improving Chest X-ray Report Generation [[paper](https://cvpr.thecvf.com/virtual/2026/poster/36623)]
-- MR-RAG: Multimodal Relevance-Aware Retrieval-Augmented Generation for Medical Visual Question Answering [[paper](https://openaccess.thecvf.com/content/CVPR2026/papers/Li_MR-RAG_Multimodal_Relevance-Aware_Retrieval-Augmented_Generation_for_Medical_Visual_Question_Answering_CVPR_2026_paper.pdf)]
-- CheXmix: Unified Generative Pretraining for Vision Language Models in Medical Imaging (**Findings**) [[paper](https://arxiv.org/pdf/2604.22989)][[code](https://github.com/StanfordMIMI/CheXmix)]
-- FairLLaVA: Fairness-Aware Parameter-Efficient Fine-Tuning for Large Vision-Language Assistants [[paper](https://arxiv.org/abs/2603.26008)][[code](https://github.com/bhosalems/FairLLaVA)]
-- MeMix: Multi-encoder Mixture Framework for Medical Report Generation (**Findings**) [[paper](https://openaccess.thecvf.com/content/CVPR2026F/papers/Cao_MeMix_Multi-Encoder_Mixture_Framework_for_Medical_Report_Generation_CVPRF_2026_paper.pdf)]
-- LlamaRG: A Multi-View Large Language Model for Radiology Report Generation (**Findings**) [[paper](https://openaccess.thecvf.com/content/CVPR2026F/papers/Jayas_LlamaRG_A_Multi-View_Large_Language_Model_for_Radiology_Report_Generation_CVPRF_2026_paper.pdf)]
-- Analyzing and Enhancing Visual Learning in LLM-based Radiology Report Generation (**Findings**) [[paper](https://openaccess.thecvf.com/content/CVPR2026F/papers/Chen_Analyzing_and_Enhancing_Visual_Learning_in_LLM-based_Radiology_Report_Generation_CVPRF_2026_paper.pdf)]
-- A Denoising-Enhanced Multimodal Learning Framework for Robust Nasal Endoscopy Report Generation (**Findings**) [[paper](https://openaccess.thecvf.com/content/CVPR2026F/papers/Yuan_A_Denoising-Enhanced_Multimodal_Learning_Framework_for_Robust_Nasal_Endoscopy_Report_CVPRF_2026_paper.pdf)]
-- Rethinking Whole-Body CT Image Interpretation: An Abnormality-Centric Approach [[paper](https://arxiv.org/abs/2506.03238)][[code](https://github.com/zhaoziheng/OmniAbnorm-CT)]
-- Teresa: Uncertainty-Aware Generalizable Chest X-ray Report Generation and Disease Classification (**Workshop**) [[paper](https://openaccess.thecvf.com/content/CVPR2026W/DG-EBF/papers/Ullah_Teresa_Uncertainty-Aware_Generalizable_Chest_X-ray_Report_Generation_and_Disease_Classification_CVPRW_2026_paper.pdf)]
-- Multimodal for Cervical Cancer Histopathology Classification and Automated Diagnostic Report Generation (**Workshop**) [[paper](https://openaccess.thecvf.com/content/CVPR2026W/CVMI/papers/Nakasi_Multimodal_for_Cervical_Cancer_Histopathology_Classification_and_Automated_Diagnostic_Report_CVPRW_2026_paper.pdf)]
-- MedMO: Grounding and Understanding Multimodal Large Language Model for Medical Images [[paper](https://arxiv.org/pdf/2602.06965)][code](https://github.com/genmilab/MedMO)]    
-
-**ACL'26**
-- Region-Grounded Report Generation for 3D Medical Imaging: A Fine-Grained Dataset and Graph-Enhanced Framework [[paper](https://arxiv.org/pdf/2604.18145v1)][[code](https://github.com/Etdihatthoc/VietPET-RoI_ACL2026)]
-- Multimodal Dual-Path Large-Model Decoding for Radiology Report Generation [[paper](https://aclanthology.org/2026.findings-acl.1997.pdf)]
-- CPR-RAG: Clinical Prior-guided Retrieval-Augmented Generation for CT Report Generation [[paper](https://aclanthology.org/2026.acl-long.1411.pdf)][[code](https://github.com/Gyuang/cpr-rag)]
-- MI-CXR: A Benchmark for Longitudinal Reasoning over Multi-Interval Chest X-rays [[paper](https://arxiv.org/pdf/2605.15574v1)][[code](https://github.com/AIDASLab/MI-CXR)]
-  
-
-**AAAI'26**
-- PriorRG: Prior-Guided Contrastive Pre-training and Coarse-to-Fine Decoding for Chest X-ray Report Generation [[paper](https://arxiv.org/abs/2508.05353)][[code](https://github.com/mk-runner/PriorRG)]
-- S2D-ALIGN: Shallow-to-Deep Auxiliary Learning for Anatomically-Grounded Radiology Report Generation [[paper](https://arxiv.org/pdf/2511.11066)]
-- A Disease-Aware Dual-Stage Framework for Chest X-ray Report Generation [[paper](https://arxiv.org/pdf/2511.12259)]
-- Explainable Melanoma Diagnosis with Contrastive Learning and LLM-based Report Generation [[paper](https://arxiv.org/pdf/2512.06105v1)][[code](https://eattt-wen.github.io/CEFM/)]
-- Medical Vision–Language Pretraining with LLM-Guided Temporal Supervision [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/39047)]
-- PET2Rep: Towards Vision-Language Model-Drived Automated Radiology Report Generation for Positron Emission Tomography [[paper](https://ojs.aaai.org/index.php/AAAI/article/download/38288/42250)][[code](https://github.com/YichiZhang98/PET2Rep)]
-- MARE: Multimodal Analogical Reasoning for Disease Evolution-Aware Radiology Report Generation [[code](https://github.com/gaoqingqing77/MARE)][[paper](https://ojs.aaai.org/index.php/AAAI/article/download/39262/43223)]
-- ReFINE: A Reward-Based Framework for Interpretable and Nuanced Evaluation of Radiology Report Generation [[paper](https://ojs.aaai.org/index.php/AAAI/article/download/37680/41642)]
-- Mitigating Entity Hallucinations in 3D Radiology Report Generation via Dual-Stream Alignment [[paper](https://ojs.aaai.org/index.php/AAAI/article/download/38379/42341)][[code](https://github.com/SCU-zly/DEAR)]
-- Organ-Aware Routing Mixture-of-Retrieval Augmented Generation for Fetal Ultrasound Reporting [[paper](https://ojs.aaai.org/index.php/AAAI/article/download/37795/41757)]
-- Anatomical Region-Guided Contrastive Decoding: A Plug-and-Play Strategy for Mitigating Hallucinations in Medical VLMs [[paper](https://arxiv.org/pdf/2512.17189)]
-- DiA-gnostic VLVAE: Disentangled Alignment-Constrained Vision Language Variational AutoEncoder for Robust Radiology Reporting with Missing Modalities [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/37835)]
-- Error Correction in Radiology Reports: A Knowledge Distillation-Based Multi-Stage Framework [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/41295)]
-- GEMA-Score: Granular Explainable Multi-Agent Scoring Framework for Radiology Report Evaluation [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/38302)][[code](https://github.com/Zhenxuan-Zhang/GEMA_score)]
-
-**ACMMM'26**
-- HarMoE: Multi-Source Chest Radiograph Pretraining with Dataset-Disentangled Experts [[paper](https://arxiv.org/pdf/2608.02252)][[code](https://github.com/Roypic/harmoe)]
-
-**WWW'26**
-- MGK-RAG: Multi-Granularity Knowledge Guided Retrieval-Augmented Generation for Radiology Report [[paper](https://dl.acm.org/doi/epdf/10.1145/3774904.3792924)]
-
-**SIGIR'26**
-- EviRAG: Evidence-Guided Retrieval-Augmented Generation for Medical Vision-Language Models [[paper](https://dl.acm.org/doi/abs/10.1145/3805712.3809930)]
-
-**MICCAI'26**
-- Concept-Guided Noisy Negative Suppression for Zero-Shot Classification and Grounding of Chest X-Ray Findings [[paper](https://arxiv.org/pdf/2605.19374v1)][[code](https://github.com/DopamineLcy/conns)]
-- MedExpMem: Adapting Experience Memory for Differential Diagnosis [[paper](https://arxiv.org/abs/2605.22872)]
-- Seeing Through Multiple Views: Parameter-Efficient Fine-Tuning via Selective Neurons for Consistent Radiology Report Generation [[paper](https://arxiv.org/abs/2606.31099)]
-- CARE: Clinical-Aware Retrieval-Enhanced Radiology Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-032-38059-3_6)][[code](https://github.com/Levii-zhu/CARE)]
-
-**ECCV'26**
-- Linguistically-Aligned and Visually-Grounded Preference Optimization for Clinically-Augmented Medical Report Generation [[paper](https://arxiv.org/pdf/2608.08494)]
-- REVA-PO: Stabilizing Reinforcement Learning for Chest X-ray Report Generation [[paper](https://eccv.ecva.net/virtual/2026/poster/5622)][[code](https://github.com/LiGuo12/REVA_PO/)]
-- Mimicking Radiologists: A Coarse-to-Fine Framework with Structural Sparse Tokens for Dual-LLM Computed Tomography Report Generation [[paper](https://eccv.ecva.net/virtual/2026/poster/5195)]
-- Region-Aware Multimodal Large Language Model via SlowFast Tokenization and Pseudo-Mask Guidance for 3D CT Report Generation [[paper](https://eccv.ecva.net/virtual/2026/poster/5301)][[code](https://github.com/babbu3682/MedRegion-CT)]
-- DiffVP: Differential Visual Semantic Prompting for LLM-Based CT Report Generation [[paper](https://eccv.ecva.net/virtual/2026/poster/5024)][[code](https://github.com/ArielTYH/DiffVP/)]
-- Seeing What Matters: Lesion-Aware High-Resolution Patch Discovery and Fusion for Chest X-ray Report Generation [[paper](https://eccv.ecva.net/virtual/2026/poster/5225)]
-
-**IJCAI'26**
-- PDD-RRG: Posterior Diagnostic Decision for Study-level Radiology Report Generation [[paper](https://arxiv.org/pdf/2608.03055)]
-- ClinAlign: Clinical Workflow Aligned Memory Retrieval for Radiology Report Generation [[paper](https://ijcai-preprints.s3.us-west-1.amazonaws.com/2026/3193.pdf)]
-
-
-**ICASSP'26**
-- Beyond Averaging: All-Rounder Capability Evaluation for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11461738)]
-- Radiology Report Generation via Multi-Path Modeling with Medical Language Priors and Semantic Guidance [[paper](https://ieeexplore.ieee.org/abstract/document/11460330)]
-- Abnormality-Aware Knowledge Graph and Hierarchical Cross-Attention in LLM for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11464520)]
-- Hierarchical Anatomically-Aligned Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11460775)]
-- Case2Knowledge: Structured Knowledge-Infused Prompting for Faithful Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11464942)]
-- SDORG: Structurally Deconstructed framework for otoscopic report generation with region-aware Multimodal Alignment [[paper](https://ieeexplore.ieee.org/abstract/document/11461023)]
-- DVPAlign: Dual-Flow Visual Graph Encoding with Diagnostic-Driven Prompt Alignment For Medical Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11463043)]
-- MP-CXR: A Modular Pipeline with Multi-Label Disease-State Classification and Image-Label Alignment for Chest X-Ray Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11460414)]
-- From ECG Signals to Diagnostic Reports: A Unified Framework with Multimodal Encoder and Fine-Tuned LLM for Automated Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11462928)]
-
-**CIKM'26**
-- DAMEC: Disease-Aware Multi-Expert Consensus Framework for Study-Level Radiology Report Generation [[code](https://github.com/mjy8086/DAMEC)]
-
-
-**BMVC'26**
-- Spatio-Temporal and Clinical Conditioning for Fine-Grained Radiology Report Retrieval [[paper](https://arxiv.org/pdf/2607.02024v1)]
-
-**MIDL'26**
-- BTReport: A Framework for Brain Tumor Radiology Report Generation with Clinically Relevant Features [[paper](https://arxiv.org/pdf/2602.16006v1)][[code](https://github.com/KurtLabUW/BTReport)]
-- CWCD: Category-Wise Contrastive Decoding for Structured Medical Report Generation [[paper](https://arxiv.org/pdf/2604.10410v1)]
-- RadVLM-GRPO: Enhancing Chest X-ray Report Generation and Visual Grounding via Reinforcement Learning [[paper](https://digitalcollection.zhaw.ch/server/api/core/bitstreams/11a627ba-ce29-4757-9dc0-9333c4d7696b/content)]
-
-**WACV'26**
-- LASOR: Towards Clinically Transparent and Explainable Ophthalmic Report Generation via Lesion-Aware Segmentation [[paper](https://openaccess.thecvf.com/content/WACV2026/papers/Park_LASOR_Towards_Clinically_Transparent_and_Explainable_Ophthalmic_Report_Generation_via_WACV_2026_paper.pdf)]
-
-**ISBI'26**
-- X-Plain: Vision-Language Knowledge Distillation for Interpretable Chest X-Ray Diagnosis [[paper](https://ieeexplore.ieee.org/abstract/document/11515681)]
-- Multi-Scale Attention Framework with Transformer Architecture for Explainable Chest X-Ray Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11515574)]
-- Clinically Grounded Radiology Report Generation via Explanation-Guided Policy Optimization [[paper](https://ieeexplore.ieee.org/abstract/document/11515964)]
-- Automatic Correction of Generative AI Chest X-Ray Radiology Reports [[paper](https://ieeexplore.ieee.org/abstract/document/11515939)]
-- Radgaze-LLM: Anatomical Region-Grounded Radiology Report Generation via Learning From Expert Gaze [[paper](https://ieeexplore.ieee.org/abstract/document/11515459)]
-
-**BMVC'26**
-- CheXGround: Anatomical Region Tokens for Grounded Longitudinal Chest X-ray Interpretation [[paper](https://arxiv.org/pdf/2608.30758)]
-
-**IJCV'26**
-- MRM++: Enhanced Masked Relation Modeling for Multi-Modal Medical Pre-training [[paper](https://link.springer.com/article/10.1007/s11263-026-02938-5)][[code](https://github.com/CUHK-AIM-Group/MRM_plus)]
-
-**Radiology'26**
-- How I Do It: Understanding and Leveraging Generative AI for Chest Radiology Reporting [[paper](https://pubs.rsna.org/doi/epdf/10.1148/radiol.253456)]
-
-**TMI'26**
-- LLM-Driven Medical Report Generation via Communication-Efficient Heterogeneous Federated Learning [[paper](https://ieeexplore.ieee.org/document/11087641)]
-- Activating Associative Disease-Aware Vision Token Memory for LLM-Based X-Ray Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11142850)][[code](https://github.com/Event-AHU/Medical_Image_Analysis)]
-- FiR-Rad: Fine-grained Reinforcement with Structured Reasoning for Chest X-ray Report Generation [[paper](https://ieeexplore.ieee.org/document/11397739)]
-- Multi-view Chest X-Ray Vision-Language Pre-training via Semantic-Aware Masked Language Modeling and High-order Alignment [[paper](https://ieeexplore.ieee.org/abstract/document/11552880)]
-- PIPA: Prior-Driven Prompting with Diagnosis-Oriented Retrieval-Augmentation for 3D Radiology Report Generation [[paper](https://pubmed.ncbi.nlm.nih.gov/42412673/)][[code](https://github.com/CUHK-AIM-Group/PIPA)]
-- RADAR: A Difference-Aware Retrieval with Organ-Level Alignment for Change Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11603839)]
-- CXRAgent: Director-Orchestrated Multi-Stage Reasoning for Chest X-Ray Interpretation [[paper](https://ieeexplore.ieee.org/abstract/document/11611226)][[code](https://github.com/laojiahuo2003/CXRAgent/)]
-- Comorbidity-Aware Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11698668/)]
-
-**TIP'26**
-- MedCure: Medical Data Curation for Efficient Vision–Language Pretraining [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=11689675)][[code](https://github.com/sendyma/MedCure)]
-
-**TMM'26**
-- TSMRG: Temporal Semantic Enhancement for Medical Report Generation with Longitudinal Data [[paper](https://ieeexplore.ieee.org/abstract/document/11611758/)]
-
-**JAMIA'26**
-- The detectability paradox: bilingual medical report generation with open-weight models and the limits of human oversight [[paper](https://academic.oup.com/jamia/advance-article/doi/10.1093/jamia/ocag070/8672665#562448309)][[code](https://github.com/ds4dh/medical_report_generation)]
-
-**Bioinformatics'26**
-- Patient-Specific Multimodal Learning with Multi-View Contrastive Alignment for Chest X-ray Report Generation [[paper](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btag566/8744089?login=false)][[code](https://github.com/mk-runner/EVOKE)]
-
-**MedIA'26**
-- Lesion-aware visio-linguistic context regularization for radiology report generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S1361841526003713)]
-- A review of longitudinal radiology report generation: Dataset composition, methods, and performance evaluation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S1361841526003737?via%3Dihub)]
-
-
-**JBHI'26**
-- Fog/Edge-Aware State Space Models for Multi-Task Chest X-ray Report Generation and Lesion Detection [[paper](https://ieeexplore.ieee.org/abstract/document/11410578)]
-- R2GenCSR: Mining Contextual and Residual Information for LLMs-based Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11419732)][[code](https://github.com/Event-AHU/Medical_Image_Analysis)]
-- Unsupervised Contrastive Refinement with Graph-Aware Multimodal Interaction for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11420997)][[code](https://github.com/adaydar/MedCARF)]
-- Uncertainty-Aware Cross-Modal Retrieval for Medical Report Generation [[paper](https://ieeexplore.ieee.org/document/11440925)][[code](https://github.com/Zhounan1222/U-CAR)]
-- A Prompt-Guided Vision-Language Framework for Interpretable and Region-Aware Disease Diagnosis in Chest X-rays [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=11488862)]
-
-**IEEE Transactions on Radiation and Plasma Medical Sciences'26**
-- CFCM-Gen:Cross-modal Feature Co-optimization Mechanism for 3D Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11498522)]
-- SegReg-Rep: Region-Aware Vision-Language Alignment for Fine-Grained Radiology Report Generation from 3D Medical Images [[paper](https://ieeexplore.ieee.org/abstract/document/11520942)]
-
-**IEEE Internet of Things Journal'26**
-- Category-Guided Vision-Language Model for IoMT-Enabled Medical Report Generation under Heterogeneous Imaging Data [[paper](https://ieeexplore.ieee.org/abstract/document/11550053)]
-
-**Information Fusion'26**
-- AI-Assisted Synthetic Medical Report Generation using Radiomic Feature Correlation-based PCA Scores of Multimodal Data for Dementia Progression [[paper](https://www.sciencedirect.com/science/article/abs/pii/S1566253526002484)]
-- CX-Mind: A Pioneering Multimodal Large Language Model for Interleaved Reasoning in Chest X-ray via Curriculum-Guided Reinforcement Learning [[paper](https://arxiv.org/abs/2508.03733)][[code](https://github.com/SII-WenjieLisjtu/CX-Mind)]
-- Collaborative cross-modal fusion network for medical report generation [[paper](https://www.sciencedirect.com/science/article/pii/S1566253526004549)][[code](https://github.com/Eleanorhxd/CCFN)]
-
-**Artificial Intelligence Review'26**
-- Automatic radiology report generation: a systematic review of emerging AI architectures and multimodal technologies [[paper](https://link.springer.com/article/10.1007/s10462-026-11556-z)]
-
-**KBS'26**
-- Causal Inference for Reliable Chest X-ray Report Generation [[paper](https://www.sciencedirect.com/science/article/pii/S0950705126001206)]
-- Toward Bias-Resilient Radiology Report Generation: Hierarchical Contrastive Learning and Adaptive Knowledge Graph Integration [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0950705126004120)]
-- Multi-scene topic-aware for novel single continuous shot multiple scenes endoscopy report generation [[paper](https://www.sciencedirect.com/science/article/pii/S0950705126009135)]
-
-**Information Processing & Management'26**
-- Latent diffusion-augmented cross-modal representation learning for radiology report generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0306457326002542)][[cpde](https://github.com/Eleanorhxd/LDCR)]
-
-**EAAI'26**
-- Auto-encoding clinical language for zero-shot medical report generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0952197625032750)]
-- Mixture of experts for radiology report generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0952197626007189)]
-- An interpretable multimodal transformer for medical report generation via hierarchical semantics and clinical labeling [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0952197626010134)]
-- Bridging the image–text gap: Reinforced Cross-modal Abnormality Driven Transformer for automatic chest X-ray report generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0952197626014910)]
-- Cross-modal Orthogonal Adaptive Contrastive Learning for robust chest radiology report generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0952197626019044)]
-
-**ESWA'26**
-- ITAdapter: Image-Tag Adapter Framework with Retrieval Knowledge Enhancer for Radiology Report Generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0957417426004070)]
-- Factual Serialization Enhancement: A Key Innovation for Chest X-ray Report Generation [[paper](https://www.sciencedirect.com/science/article/pii/S0957417426014636)][[code](https://github.com/mk-runner/FSE)]
-- Spatio-Temporal-Aware Preference Optimization for Personalized Radiology Report Generation [[paper](https://www.sciencedirect.com/science/article/pii/S0957417426012777)]
-- Image mask-guided cross-modal network for radiology report generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S095741742601938X)]
-- Automated Radiology Report Generation: A Comprehensive Review [[paper](https://www.sciencedirect.com/science/article/pii/S0957417426022293)]
-- Standardizing Longitudinal Chest X-ray Report Evaluation via Large Language Model Annotation [[paper](https://www.sciencedirect.com/science/article/pii/S095741742603143X)]
-
-**Neurocomputing'26**
-- Medical report generation via knowledge distill and medical keywords [[paper](https://www.sciencedirect.com/science/article/pii/S0925231226012208)]
-
-**arXiv'26**
-- VolumeVision: A 2.5D Hierarchical Architecture for Efficient Automated Reporting of Chest CT Volumes [[paper](https://assets.tina.io/1fb09d03-9237-4c49-aaa9-d024a83c7ac7/VolumeVision.pdf)]
-- Benchmarking and Adapting DeepSeek-OCR and Vision-Language Models for Chest X-ray Report Generation [[paper](https://openreview.net/pdf?id=DIgqBVvuBX)]
-- AnatomiX, an Anatomy-Aware Grounded Multimodal Large Language Model for Chest X-Ray Interpretation [[paper](https://arxiv.org/pdf/2601.03191v1)]
-- Aligning Findings with Diagnosis: A Self-Consistent Reinforcement Learning Framework for Trustworthy Radiology Reporting [[paper](https://arxiv.org/pdf/2601.03321v1)]
-- Semantics Preserving Contrastive Decoding for Hallucination Robust Medical Vision-Language Models [[paper](https://www.researchgate.net/profile/Dwarikanath-Mahapatra/publication/399488093_Semantics_Preserving_Contrastive_Decoding_for_Hallucination_Robust_Medical_Vision-Language_Models/links/695ceb747e61d05b5317758b/Semantics-Preserving-Contrastive-Decoding-for-Hallucination-Robust-Medical-Vision-Language-Models.pdf)]
-- MedGround: Bridging the Evidence Gap in Medical Vision-Language Models with Verified Grounding Data [[paper](https://arxiv.org/pdf/2601.06847)]
-- UniX: Unifying Autoregression and Diffusion for Chest X-Ray Understanding and Generation [[paper](https://arxiv.org/html/2601.11522v1)][[code](https://github.com/ZrH42/UniX)]
-- CTEST-METRIC: A UNIFIED FRAMEWORK TO ASSESS CLINICAL VALIDITY OF METRICS FOR CT REPORT GENERATION [[paper](https://arxiv.org/pdf/2601.11488)]
-- AgentsEval: Clinically Faithful Evaluation of Medical Imaging Reports via Multi-Agent Reasoning [[paper](https://arxiv.org/pdf/2601.16685)]
-- Standardizing Longitudinal Radiology Report Evaluation via Large Language Model Annotation [[paper](https://arxiv.org/pdf/2601.16753)]
-- Scaling medical imaging report generation with multimodal reinforcement learning [[paper](https://arxiv.org/pdf/2601.17151)]
-- Benchmarking Direct Preference Optimization for Medical Large Vision–Language Models [[paper](https://arxiv.org/pdf/2601.17918)]
-- Making medical vision-language models think causally across modalities with retrieval-augmented cross-modal reasoning [[paper](https://arxiv.org/pdf/2601.18356)]
-- CURE: Curriculum-guided Multi-task Training for Reliable Anatomy Grounded Report Generation [[paper](https://arxiv.org/pdf/2601.15408)][[code](https://github.com/PabloMessina/CURE)]
-- TRACE: Temporal Radiology with Anatomical Change Explanation for Grounded X-ray Report Generation [[paper](https://arxiv.org/pdf/2602.02963v1)][[code](https://github.com/UTSA-VIRLab/TRACE)]
-- LEAD: Layer-wise Expert-aligned Decoding for Faithful Radiology Report Generation [[paper](https://arxiv.org/pdf/2602.04617v1)]
-- OmniRad: A Radiological Foundation Model for Multi-Task Medical Image Analysis [[paper](https://arxiv.org/pdf/2602.04547v1)]
-- MedMO: Grounding and Understanding Multimodal Large Language Model for Medical Images [[paper](https://arxiv.org/pdf/2602.06965)][[code](https://huggingface.co/MBZUAI/MedMO-4B)]
-- PhenoLIP: Integrating Phenotype Ontology Knowledge into Medical Vision–Language Pretraining [[paper](https://arxiv.org/pdf/2602.06184v1)]
-- Thinking Like a Radiologist: A Dataset for Anatomy-Guided Interleaved Vision Language Reasoning in Chest X-ray Interpretation [[paper](https://arxiv.org/pdf/2602.12843v1)][[code](https://github.com/qiuzyc/thinking_like_a_radiologist)]
-- Layer-Specific Fine-Tuning for Improved Negation Handling in Medical Vision-Language Models [[paper](https://arxiv.org/pdf/2602.12498v1)]
-- CT-Bench: Benchmarking Multimodal AI in Computed Tomography [[paper](https://arxiv.org/pdf/2602.14879v1)][[code](https://github.com/CelestialShine/CT-Bench)][[data](https://www.kaggle.com/datasets/cd1661d6d6aeab08b8eb99b58885b4489d76fc5ac07d5aac76cae577e6426e2f/data?select=qa_clip.json)]
-- Concept-Enhanced Multimodal RAG: Towards Interpretable and Accurate Radiology Report Generation [[paper](https://arxiv.org/pdf/2602.15650v1)]
-- MedXIAOHE: A Comprehensive Recipe for Building Medical MLLMs [[paper](https://arxiv.org/pdf/2602.12705)]
-- MedProbCLIP: Probabilistic Adaptation of Vision-Language Foundation Model for Reliable Radiograph-Report Retrieval [[paper](https://arxiv.org/pdf/2602.16019v1)]
-- LUMEN: Longitudinal Multi-Modal Radiology Model for Prognosis and Diagnosis [[paper](https://arxiv.org/pdf/2602.21142v1)]
-- MammoWise: Multi-Model Local RAG Pipeline for Mammography Report Generation [[paper](https://arxiv.org/pdf/2602.22462v1)]
-- A data- and compute-efficient chest X-ray foundation model beyond aggressive scaling [[paper](https://arxiv.org/pdf/2602.22843v1)]
-- MediX-R1: Open Ended Medical Reinforcement Learning [[paper](https://arxiv.org/pdf/2602.23363)]
-- Suppressing Prior-Comparison Hallucinations in Radiology Report Generation via Semantically Decoupled Latent Steering [[paper](https://arxiv.org/pdf/2602.23676v1)]
-- Footprint-Guided Exemplar-Free Continual Histopathology Report Generation [[paper](https://arxiv.org/pdf/2602.23817v1)]
-- U-VLM: Hierarchical Vision Language Modeling for Report Generation [[paper](https://arxiv.org/pdf/2603.00479v1)]
-- NeuroSymb-MRG: Differentiable Abductive Reasoning with Active Uncertainty Minimization for Radiology Report Generation [[paper](https://arxiv.org/pdf/2603.01756v1)]
-- Measuring What VLMs Don’t Say: Validation Metrics Hide Clinical Terminology Erasure in Radiology Report Generation [[paper](https://arxiv.org/pdf/2603.01625v1)]
-- ClinCoT: Clinical-Aware Visual Chain-of-Thought for Medical Vision Language Models [[paper](https://arxiv.org/pdf/2603.01124v1)]
-- LLM-Bootstrapped Targeted Finding Guidance for Factual MLLM-based Medical Report Generation [[paper](https://arxiv.org/pdf/2603.00426)]
-- Structure Observation Driven Image-Text Contrastive Learning for Computed Tomography Report Generation [[paper](https://arxiv.org/pdf/2603.04878v1)]
-- Rethinking the Efficiency and Effectiveness of Reinforcement Learning for Radiology Report Generation [[paper](https://arxiv.org/pdf/2603.04022)]
-- RANGER: Sparsely-Gated Mixture-of-Experts with Adaptive Retrieval Re-ranking for Pathology Report Generation [[paper](https://arxiv.org/pdf/2603.04348)]
-- CRIMSON: A Clinically-Grounded LLM-Based Metric for Generative Radiology Report Evaluation [[paper](https://arxiv.org/pdf/2603.06467)][[code](https://github.com/rajpurkarlab/CRIMSON)]
-- EviAgent: Evidence-Driven Agent for Radiology Report Generation [[paper](https://arxiv.org/pdf/2603.13956)]
-- DiffVP: Differential Visual Semantic Prompting for LLM-Based CT Report Generation [[paper](https://arxiv.org/pdf/2603.17718v1)]
-- ACE-LoRA: Graph-Attentive Context Enhancement for Parameter-Efficient Adaptation of Medical Vision-Language Models [[paper](https://arxiv.org/pdf/2603.17079v1)]
-- Seeing Like Radiologists: Context- and Gaze-Guided Vision-Language Pretraining for Chest X-rays [[paper](https://arxiv.org/abs/2603.26049)][[code](https://github.com/mk-runner/CoGaze)][[Hugging Face](https://huggingface.co/MK-runner/CoGaze)]
-- Ran Score: a LLM-based Evaluation Score for Radiology Report Generation [[paper](https://arxiv.org/pdf/2603.22935)]
-- A Reasoning-Enabled Vision–Language Foundation Model for Chest X-ray Interpretation [[paper](https://arxiv.org/pdf/2604.00493v1)][[code](https://github.com/YBZh/CheXOne)]
-- Ultrasound-CLIP: Semantic-Aware Contrastive Pre-training for Ultrasound Image-Text Understanding [[paper](https://arxiv.org/pdf/2604.01749v1)][[code](https://github.com/mk-runner/CoGaze)]
-- EviAgent: Evidence-Driven Agent for Radiology Report Generation [[paper](https://arxiv.org/pdf/2603.13956)]
-- XrayClaw: Cooperative-Competitive Multi-Agent Alignment for Trustworthy Chest X-ray Diagnosis [[paper](https://arxiv.org/pdf/2604.02695v1)]
-- M-IDoL: Information Decomposition for Modality-Specific and Diverse Representation Learning in Medical Foundation Model [[paper](https://arxiv.org/pdf/2604.08936v1)]
-- ECHO: Efficient Chest X-ray Report Generation with One-step Block Diffusion [[paper](https://arxiv.org/pdf/2604.09450v1)]
-- Enhancing Fine-Grained Spatial Grounding in 3D CT Report Generation via Discriminative Guidance [[paper](https://arxiv.org/pdf/2604.10437v1)]
-- Radiology Report Generation for Low-Quality X-Ray Images [[paper](https://arxiv.org/pdf/2604.10188v1)]
-- Gaze2Report: Radiology Report Generation via Visual-Gaze Prompt Tuning of LLMs [[paper](https://arxiv.org/pdf/2604.08600)]
-- MARCH: Multi-Agent Radiology Clinical Hierarchy for CT Report Generation [[paper](https://arxiv.org/pdf/2604.16175v1)]
-- Toward Clinically Acceptable Chest X-ray Report Generation: A Qualitative Retrospective Pilot Study of CXRMate-2 [[paper](https://arxiv.org/pdf/2604.18967v1)][[code](https://github.com/aehrc/cxrmate-2)]
-- ReXSonoVQA: A Video QA Benchmark for Procedure-Centric Ultrasound Understanding [[paper](https://arxiv.org/pdf/2604.10916)][[code](https://github.com/rajpurkarlab/RexSonoVQA)]
-- IRG-DR: Interactive Report Generation Framework with Evidence Guidance for Diabetic Retinopathy [[paper](https://fyust.edu.cn/gjhyqk/cscwd2026/papers/paper_661.pdf)]
-- CT-FineBench: A Diagnostic Fidelity Benchmark for Fine-Grained Evaluation of CT Report Generation [[paper](https://arxiv.org/pdf/2604.24001)]
-- Graph-Augmented Topological Internalization with Dual-Stream Classifiers for Medical Report Generation [[paper](https://arxiv.org/pdf/2605.02376)]
-- CXR-ContraBench: Benchmarking Negated-Option Attraction in Medical VLMs [[paper](https://arxiv.org/pdf/2605.05810)]
-- Hi-GaTA: Hierarchical Gated Temporal Aggregation Adapter for Surgical Video Report Generation [[paper](https://arxiv.org/pdf/2605.11208)]
-- MI-CXR: A Benchmark for Longitudinal Reasoning over Multi-Interval Chest X-rays [[paper](https://arxiv.org/pdf/2605.15574v1)]
-- AnchorDiff: Topology-Aware Masked Diffusion with Confidence-based Rewriting for Radiology Report Generation [[paper](https://arxiv.org/pdf/2605.17071v1)]
-- Rethinking Visual Attribution for Chest X-ray Reasoning in Large Vision Language Models [[paper](https://arxiv.org/pdf/2605.20158v1)][[code](https://github.com/gzxiong/medfocus/)]
-- HalluCXR: Benchmarking and Mitigating Hallucinations in Medical Vision-Language Models for Chest Radiograph Interpretation [[paper](https://arxiv.org/pdf/2605.20469v1)]
-- SliceWorld: A Predictive and Controllable World-State Model for CT Report Generation [[paper](https://arxiv.org/pdf/2605.24371v1)][[code](https://github.com/synlp/SliceWorld)]
-- Not All Tokens Matter Equally: Dynamic In-context Vector Distillation with Decisive-Token Supervision for Long-form Medical Report Generation [[paper](https://arxiv.org/pdf/2605.27194v1)]
-- DDX-TRACE: A Benchmark for Medical Diagnostic Trajectories in VLMs [[paper](https://arxiv.org/pdf/2605.23629)][[data](https://huggingface.co/datasets/User3033/DDx-TRACE)]
-- SliceWorld: A Predictive and Controllable World-State Model for CT Report Generation [[paper](https://arxiv.org/pdf/2605.24371)]
-- Med-R2: An Adversarial Benchmark for Evidence-Grounded Reasoning in Medical VLMs [[paper](https://arxiv.org/pdf/2605.24371)]
-- Universal Boosts, Specific Suppressors: Sparse Autoencoder Steering of Medical Vision-Language Models [[paper](https://arxiv.org/pdf/2605.24977)]
-- CCS: Clinical Consensus Selection for Radiology Report Generation [[paper](https://arxiv.org/pdf/2605.30131)]
-- EasyLens: A Training-Free Plug-and-Play Subtle-Lesion Representation Amplifier for Medical Vision-Language Models [[paper](https://arxiv.org/pdf/2606.06379v1)]
-- GLINT: Sparsely Gated Vision-Language Alignment for Fine-Grained Radiology Representations [[paper](https://arxiv.org/pdf/2606.03180)]
-- A Vision–language Framework for Comparative Reasoning in Radiology [[paper](https://arxiv.org/pdf/2606.06407v1)][[code](https://github.com/time-seed/MedReCo)]
-- CheXanatomy: Anatomy-Aware Vision-Language Modeling for Chest Radiographs [[paper](https://arxiv.org/pdf/2606.08420v1)]
-- A multi-agent system for spine MRI report generation from multi-sequence imaging [[paper](https://arxiv.org/pdf/2606.08897v1)]
-- ReportQA: QA-Based Radiology Report Evaluation [[paper](https://arxiv.org/pdf/2606.15037v1)]
-- Learning Directional Semantic Transitions for Longitudinal Chest X-ray Analysis [[paper](https://arxiv.org/pdf/2606.15938v1)][[code](https://github.com/RPIDIAL/ProTrans)]
-- Beyond Scalar Scores: Exploring LLM-based Metrics for Clinical Significance Evaluation in Radiology Reports [[paper](https://arxiv.org/pdf/2606.18797v1)]
-- Scaling Generative Foundation Models for Chest Radiography with Rectified Flow Transformers [[paper](https://arxiv.org/pdf/2606.19460v1)]
-- Hallucination Detection and Correction in Medical VLMs via Counter-Evidence Verification [[paper](https://arxiv.org/pdf/2606.18609)]
-- TAVR-VLM: Risk-Conditioned Causal Grounding for Hallucination-Resistant Report Generation [[paper](https://arxiv.org/pdf/2606.26874v1)]
-- Precision Recall Controllable Radiology Report Generation via Hybrid Natural Language and Clinical Reward Learning [[paper](https://arxiv.org/pdf/2606.21447)]
-- SHOVIR: A Benchmark for Evaluating Vision Shortcut Learning in Radiology Report Generation [[paper](https://arxiv.org/pdf/2606.30201v1)]
-- AtomiMed: Hierarchical Atomic Fact-Checking for Universal Clinical-Aware Medical Report Evaluation [[paper](https://arxiv.org/pdf/2606.31292)]
-- Seeing What Matters: Lesion-Aware High-Resolution Patch Discovery and Fusion for Chest X-ray Report Generation [[paper](https://arxiv.org/abs/2607.06909)]
-- PathReportEval: A Systematic Benchmark for Pathology Report Generation [[paper](https://arxiv.org/pdf/2607.18448v1)]
-- ClinFusion: A Vision-Centric Multimodal LLM System for Holistic Medical Understanding [[paper](https://arxiv.org/pdf/2607.24743v1)][[code](https://github.com/alibaba-damo-academy/ClinFusion)]
-- EndoVLM: An Endoscopy Vision-Language Pre-training Model via Anatomy-Guided Sparsity and Progressive Alignment [[paper](https://arxiv.org/pdf/2608.04472v1)][[code](https://github.com/Scatteredrain/EndoVLM)]
-- CARE-X: Towards Clinically Useful Radiology VLMs with Auxiliary Supervision, Reward-Aligned Learning, and Tool-Augmented Measurement [[paper](https://arxiv.org/pdf/2608.03890)]
-- Learning to See Locally and Align Clinically with Pathology Semantics for Radiology Report Generation [[paper](https://arxiv.org/pdf/2608.00279)]
-- CogRad: A Cognitively-Inspired Multi-Agent Framework for Radiology Report Generation [[paper](https://ui.adsabs.harvard.edu/abs/2026arXiv260703853R/abstract)]
-- ALTER: Modeling Longitudinal Changes via Regional Differencing for 3D CT Report Generation [[paper](https://arxiv.org/abs/2608.05615)][[code](https://github.com/peytonkarlie/ALTER)]
-- MedUP: Awakening Unified Understanding and Perception in Medical Vision-Language Models [[paper](https://arxiv.org/pdf/2608.10635)]
-- RadFusion: Towards Threshold-Controllable Radiology Report Generation [[paper](https://arxiv.org/pdf/2608.10505)]
-- PerFact: Perception-Derived Fact Prompting for 3D Brain MRI Report Generation [[paper](https://arxiv.org/pdf/2608.17926)]
-- Graph-Supervised Hierarchical Clinical Alignment for Radiology Report Generation with Large Language Models [[paper](https://arxiv.org/pdf/2608.24121)]
-- STRIVE: Multi-Agent Structured Temporal Reasoning with Integrated Verification for Longitudinal Radiology Report Generation [[paper](https://arxiv.org/pdf/2608.24237)]
-- UR2-MLLM: Uncertainty-aware Revisit Reasoning in Multimodal Large Language Models for Radiology Report Generation [[paper](https://arxiv.org/pdf/2608.22217)]
-- BrainDiff: Longitudinal Report Generation for Multimodal Brain MRI [[paper](https://arxiv.org/pdf/2609.00593)][[code](https://github.com/jhuldr/BrainDiff)]
-- Error Detection for PET/CT Radiology Reports: Domain-Specific vs Large Language Models [[paper](https://arxiv.org/pdf/2608.30021)]
-- Concept-Grounded Reasoning with Prompt-Driven Localization for Interpretable Structured Report Generation [[paper](https://arxiv.org/pdf/2609.15334)]
-- MAC-RRG: Iterative Multi-Agent Collaboration for X-ray Radiology Report Generation [[paper](https://arxiv.org/pdf/2609.26124)]
- 
----
-
-### 2025
-
-**Nature'25**
-- A fully open AI foundation model applied to chest radiography [[paper](https://www.nature.com/articles/s41586-025-09079-8)]
-
-**Nature Medicine'25**
-- A generalist medical language model for disease diagnosis assistance [[paper](https://www.nature.com/articles/s41591-024-03416-6)][[code](https://github.com/medfound/medfound)]
-
-**Nature Communications'25**
-- Towards a holistic framework for multimodal LLM in 3D brain CT radiology report generation [[paper](https://www.nature.com/articles/s41467-025-57426-0)]
-- A clinically accessible small multimodal radiology model and evaluation metric for chest X-ray findings [[paper](https://www.nature.com/articles/s41467-025-58344-x)][[code](https://github.com/microsoft/llava-rad)][[metric](https://github.com/microsoft/chexprompt)]
-- Generating dermatopathology reports from gigapixel whole slide images with HistoGPT [[paper](https://www.nature.com/articles/s41467-025-60014-x)]
-
-**TPAMI'25**
-- Diagnostic Captioning by Cooperative Task Interactions and Sample-graph Consistency [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10974505)]
-- Uncertainty-aware Medical Diagnostic Phrase Identification and Grounding [[paper](https://arxiv.org/pdf/2404.06798)][[code](https://github.com/Cocofeat/uMedGround)]
-
-**Nature Computational Science'25**
-- Evaluating and Mitigating Bias in AI-Based Medical Text Generation [[paper](https://arxiv.org/pdf/2504.17279v1)] [[code](https://github.com/iriscxy/GenFair)]
-- Toward fair AI-driven medical text generation [[paper](https://www.nature.com/articles/s43588-025-00807-8)]
-
-**npj Digital Medicine'25**
-- Keyword-based AI assistance in the generation of radiology reports: A pilot study [[paper](https://www.nature.com/articles/s41746-025-01889-4)]
-- A multimodal multidomain multilingual medical foundation model for zero shot clinical diagnosis [[paper](https://www.nature.com/articles/s41746-024-01339-7)][[code](https://github.com/AI-in-Health/M3FM)]
-- A deep learning based automatic report generator for retinal optical coherence tomography images [[paper](https://www.nature.com/articles/s41746-025-01988-2)]
-
-**NEJM AI'25**
-- PadChest-GR: A Bilingual Chest X-Ray Dataset for Grounded Radiology Report Generation [[paper](https://ai.nejm.org/doi/full/10.1056/AIdbp2401120)]
-- MedAgentBench: A Realistic Virtual EHR Environment to Benchmark Medical LLM Agents [[paper](https://ai.nejm.org/doi/pdf/10.1056/AIdbp2500144)][[code](https://github.com/stanfordmlgroup/MedAgentBench)]
-
-**Radiology: Artificial Intelligence'25**
-- Retrieval-Augmented Generation with Large Language Models in Radiology: From Theory to Practice [[paper](https://pubs.rsna.org/doi/abs/10.1148/ryai.240790)]
-
-**JAMA Network Open'25**
-- Efficiency and Quality of Generative AI–Assisted Radiograph Reporting [[paper](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2834943)]
-
-**CVPR'25**
-- Enhanced Contrastive Learning with Multi-view Longitudinal Data for Chest X-ray Report Generation [[paper](https://arxiv.org/abs/2502.20056)] [[code](https://github.com/mk-runner/MLRG)]
-- FactCheXcker: Mitigating Measurement Hallucinations in Chest X-ray Report Generation Models [[paper](https://arxiv.org/pdf/2411.18672)]
-- DART: Disease-aware Image-Text Alignment and Self-correcting Re-alignment for Trustworthy Radiology Report Generation [[paper](https://cvpr.thecvf.com/virtual/2025/poster/32986)]
-- CXPMRG-Bench: Pre-training and Benchmarking for X-ray Medical Report Generation on CheXpert Plus Dataset [[paper](https://arxiv.org/pdf/2410.00379)][[code](https://github.com/Event-AHU/Medical_Image_Analysis)]
-- VILA-M3: Enhancing Vision-Language Models with Medical Expert Knowledge [[paper](https://arxiv.org/pdf/2411.12915)][[code](https://github.com/Project-MONAI/VLM-Radiology-Agent-Framework)]
-- Multi-Resolution Pathology-Language Pre-training Model with Text-Guided Visual Representation [[paper](https://arxiv.org/pdf/2504.18856v1)][[code](https://github.com/BasitAlawode/MR-PLIP)]
-- ARDGen: Augmentation Regularization for Domain-Generalized Medical Report Generation (**Workshop**) [[paper](https://openaccess.thecvf.com/content/CVPR2025W/DG-EBF/papers/Ahsan_ARDGen_Augmentation_Regularization_for_Domain-Generalized_Medical_Report_Generation_CVPRW_2025_paper.pdf)]
-- MVCM: Enhancing Multi-View and Cross-Modality Alignment for Medical Visual Question Answering and Medical Image-Text Retrieval (**Workshop**) [[paper](https://openaccess.thecvf.com/content/CVPR2025W/MULA2025/papers/Zou_MVCM_Enhancing_Multi-View_and_Cross-Modality_Alignment_for_Medical_Visual_Question_CVPRW_2025_paper.pdf)]
-- Alignment, Mining and Fusion: Representation Alignment with Hard Negative Mining and Selective Knowledge Fusion for Medical Visual Question Answering [[paper](https://arxiv.org/pdf/2510.08791v1)][[code](https://github.com/AlexCo1d/AMiF)]
-
-**ICLR'25**
-- MedRegA: Interpretable Bilingual Multimodal Large Language Model for Diverse Biomedical Tasks [[paper](https://arxiv.org/abs/2410.18387)][[code](https://github.com/xmed-lab/MedRegA)]
-
-**ICCV'25**
-- GEMeX: A Large-Scale, Groundable, and Explainable Medical VQA Benchmark for Chest X-ray Diagnosis (**GEMeX**)[[paper](https://arxiv.org/pdf/2411.16778)][[project](https://huggingface.co/datasets/BoKelvin/GEMeX)]
-- CT-GRAPH: Hierarchical Graph Attention Network for Anatomy-Guided CT Report Generation (**workshop**) [[paper](https://arxiv.org/pdf/2508.05375?)][[code](https://github.com/hakal104/CT-GRAPH)]
-- Knowledge-Driven Query Network with Adaptive Cross-View Attention for Structured Radiology Report Generation (**workshop**)[[paper](https://openaccess.thecvf.com/content/ICCV2025W/CVAMD/papers/Hou_Knowledge-Driven_Query_Network_with_Adaptive_Cross-View_Attention_for_Structured_Radiology_ICCVW_2025_paper.pdf)]
-- RadGPT: Constructing 3D Image-Text Tumor Datasets (**RadGPT**)[[paper](https://www.cs.jhu.edu/~zongwei/publication/bassi2025radgpt.pdf)][[project](https://www.zongweiz.com/dataset)]
-
-**NIPS'25**
-- Toward a Vision-Language Foundation Model for Medical Data: Multimodal Dataset and Benchmarks for Vietnamese PET/CT Report Generation[[paper](https://arxiv.org/pdf/2509.24739v1)]
-- CURV: Coherent Uncertainty-Aware Reasoning in Vision-Language Models for X-Ray Report Generation [[paper](https://neurips.cc/virtual/2025/poster/120063)][[code](https://github.com/wwwadx/CURV)]
-- Multimodal Disease Progression Modeling via Spatiotemporal Disentanglement and Multiscale Alignment [[paper](https://arxiv.org/pdf/2510.11112)]
-- Toward a Vision-Language Foundation Model for Medical Data: Multimodal Dataset and Benchmarks for Vietnamese PET/CT Report Generation [[paper](https://arxiv.org/abs/2509.24739)][[code](https://github.com/AIoT-Lab-AI4LIFE/ViPET-ReportGen)]
-- RadZero: Similarity-Based Cross-Attention for Explainable Vision-Language Alignment in Chest X-ray with Zero-Shot Multi-Task Capability [[paper](https://arxiv.org/abs/2504.07416)][[code](https://github.com/deepnoid-ai/RadZero)]
-
-**AAAI'25**
-- Radiology Report Generation via Multi-objective Preference Optimization [[paper](https://arxiv.org/pdf/2412.08901)]
-- HC-LLM: Historical-Constrained Large Language Models for Radiology Report Generation [[paper](https://www.arxiv.org/pdf/2412.11070)][[code](https://github.com/TengfeiLiu966/HC-LLM)]
-- LLM-RG4: Flexible and Factual Radiology Report Generation across Diverse Input Contexts [[paper](https://arxiv.org/pdf/2412.12001)][[code](https://github.com/zh-Wang-Med/LLM-RG4)]
-- MEPNet: Medical Entity-balanced Prompting Network for Brain CT Report Generation [[paper](https://arxiv.org/pdf/2503.17784)][[code](https://github.com/YanzhaoShi/MEPNet)]
-- Overcoming Heterogeneous Data in Federated Medical Vision-Language Pre-training: A Triple-Embedding Model Selector Approach [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/32807)][[code](https://github.com/NBT-AILAB/PMS-FM)]
-- DAMPER: A Dual-Stage Medical Report Generation Framework with Coarse-Grained MeSH Alignment and Fine-Grained Hypergraph Matching [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/32393)]
-
-**ICML'25**
-- MedRAX: Medical Reasoning Agent for Chest X-ray [[paper](https://arxiv.org/pdf/2502.02673)][[code](https://github.com/bowang-lab/MedRAX)]
-
-**ACL'25**
-- RADAR: Enhancing Radiology Report Generation with Supplementary Knowledge Injection [[paper](https://arxiv.org/pdf/2505.14318v1)][[code](https://github.com/wjhou/Radar)]
-- Libra: Leveraging Temporal Images for Biomedical Radiology Analysis [[paper](https://arxiv.org/abs/2411.19378)][[code](https://github.com/X-iZhang/Libra)]
-- Online Iterative Self-Alignment for Radiology Report Generation [[paper](https://aclanthology.org/2025.acl-long.1348.pdf)]
-- Automated Structured Radiology Report Generation [[paper](https://aclanthology.org/2025.acl-long.1301/)]
-- The Impact of Auxiliary Patient Data on Automated Chest X-Ray Report Generation and How to Incorporate It [[paper](https://aclanthology.org/2025.acl-long.9.pdf)]
-- MEIT: Multimodal Electrocardiogram Instruction Tuning on Large Language Models for Report Generation [[paper](https://arxiv.org/abs/2403.04945)][[code](https://github.com/AIoT-MLSys-Lab/MEIT)]
-- CSTRL: Context-Driven Sequential Transfer Learning for Abstractive Radiology Report Summarization [[paper](https://arxiv.org/pdf/2503.05750)]
-- Look & Mark: Leveraging Radiologist Eye Fixations and Bounding boxes in Multimodal Large Language Models for Chest X-ray Report Generation [[paper](https://arxiv.org/pdf/2505.22222)]
-- Argus: Benchmarking and Enhancing Vision-Language Models for 3D Radiology Report Generation [[paper](https://aclanthology.org/2025.findings-acl.845.pdf)]
-
-**ACMMM'25**
-- CheXPO: Preference Optimization for Chest X-ray VLMs with Counterfactual Rationale [[paper](https://arxiv.org/pdf/2507.06959)][[code](https://github.com/ResearchGroup-MedVLLM/CheX-Phi35V)]
-- Self-Supervised Anatomical Consistency Learning for Vision-Grounded Medical Report Generation [[paper](https://arxiv.org/pdf/2509.25963)]
-- Cross-Counter-Repeat Attention for Enhanced Understanding of Visual Semantics in Radiology Report Generation [[paper](https://dl.acm.org/doi/abs/10.1145/3746027.3755368)]
-- Pathology-Aware Reconstruction with Discriminative Knowledge Boosting Alignment for Che-Xray Vision-Language Pre-training [[paper](https://dl.acm.org/doi/abs/10.1145/3746027.3755336)]
-- Medical Vision-Language Pre-training with Multimodal Variational Masked Autoencoder for Robust Medical VQA [[paper](https://dl.acm.org/doi/abs/10.1145/3746027.3755273)]
-
-**IJCAI'25**
-- RRG-Mamba: Efficient Radiology Report Generation with State Space Model [[paper](https://ijcai-preprints.s3.us-west-1.amazonaws.com/2025/4573.pdf)][[code](https://github.com/Eleanorhxd/RRG-Mamba)]
-- Cyclic Vision-Language Manipulator: Towards Reliable and Fine-Grained Image Interpretation for Automated Report Generation [[paper](https://ijcai-preprints.s3.us-west-1.amazonaws.com/2025/1579.pdf)]
-
-**EMNLP'25**
-- CREPE: Rapid Chest X-ray Report Evaluation by Predicting Multi-category Error Counts [[paper](https://openreview.net/forum?id=gjFuz5jbiJ)][[code](https://github.com/gihuncho/crepe/tree/main)]
-- MediVLM: A Vision Language Model for Radiology Report Generation from Medical Images [[paper](https://aclanthology.org/2025.findings-emnlp.544.pdf)]
-- MedTutor: A Retrieval-Augmented LLM System for Case-Based Medical Education [[paper](https://aclanthology.org/2025.emnlp-demos.24.pdf)]
-- The More, The Better? A Critical Study of Multimodal Context in Radiology Report Summarization [[paper](https://aclanthology.org/2025.findings-emnlp.1040.pdf)]
-
-**COLING'25**
-- KIA: Knowledge-Guided Implicit Vision-Language Alignment for Chest X-Ray Report Generation [[paper](https://aclanthology.org/2025.coling-main.276/)]
-- CmEAA: Cross-modal Enhancement and Alignment Adapter for Radiology Report Generation [[paper](https://aclanthology.org/2025.coling-main.571/)]
-
-**NAACL'25**
-- DDGIP: Radiology Report Generation Through Disease Description Graph and Informed Prompting [[paper](https://aclanthology.org/anthology-files/pdf/findings/2025.findings-naacl.215.pdf)]
-- VividMed: Vision Language Model with Versatile Visual Grounding for Medicine [[paper](https://arxiv.org/pdf/2410.12694)][[code](https://github.com/function2-llx/MMMM)]
-- Fact-aware multimodal retrieval augmentation for accurate medical radiology report generation [[paper](https://arxiv.org/abs/2407.15268)][[code](https://github.com/cxcscmu/FactMM-RAG?tab=readme-ov-file)]
-- GPT-4V Cannot Generate Radiology Reports Yet [paper](https://aclanthology.org/2025.findings-naacl.113/)]
-
-**MICCAI'25**
-- Phrase-Grounded Fact-Checking for Automatically Generated Chest X-Ray Reports [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04981-0_42)]
-- Diff-RRG: Longitudinal Disease-Wise Patch Difference as Guidance for LLM-Based Radiology Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04981-0_15)]
-- SPEC-CXR: Advancing Clinical Safety Through Entity-Level Performance Evaluation of Chest X-ray Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04981-0_56)]
-- Enhancing Radiology Report Interpretation through Modality-Specific RadGraph Fine-Tuning [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04981-0_21)]
-- Medical Contrastive Learning of Positive and Negative Mentions [[paper](https://link.springer.com/chapter/10.1007/978-3-032-05141-7_38)]
-- TRRG: Towards Truthful Radiology Report Generation With Cross-Modal Disease Clue Enhanced Large Language Models [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04981-0_61)]
-- Contrastive Knowledge-Guided Large Language Models for Medical Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04978-0_11)]
-- MCA-RG: Enhancing LLMs with Medical Concept Alignment for Radiology Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04971-1_36)]
-- RRG-DPO: Direct Preference Optimization for Clinically Accurate Radiology Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04971-1_52)]
-- Semantic-Aware Chest X-ray Report Generation with Domain-Specific Lexicon and Diversity-Controlled Retrieval [[paper](https://link.springer.com/chapter/10.1007/978-3-032-04978-0_58)][[code](https://github.com/BaochangZhang/DrLS)]
-- ITAdaptor: Image-Tag Adapter Framework with Knowledge Enhancement for Radiology Report Generation [[paper](https://papers.miccai.org/miccai-2025/paper/1619_paper.pdf)]
-
-**ICASSP'25**
-- A Novel Single Continuous Shot Multiple Lesions Endoscopy Report Generation [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10888634)]
-- CoMT: Chain-of-Medical-Thought Reduces Hallucination in Medical Report Generation [[paper](https://arxiv.org/pdf/2406.11451)][[code](https://github.com/FRENKIE-CHIANG/CoMT)]
-
-**ISBI'25**
-- R2Gen-Mamba: A Selective State Space Model for Radiology Report Generation [[paper](https://arxiv.org/abs/2410.18135)][[code](https://github.com/YonghengSun1997/R2Gen-Mamba)]
-- Prompt-Guided Radiology Report Generation Utilizing SAM [[paper](https://ieeexplore.ieee.org/abstract/document/10980655)]
-- Parameter-Efficient Fine-Tuning Medical Multimodal Large Language Models for Medical Visual Grounding [[paper](https://ieeexplore.ieee.org/document/10981029)]
-
-**MIDL'25**
-- Radialog: A large vision-language model for radiology report generation and conversational assistance [[paper](https://github.com/ChantalMP/RaDialog)][[code](https://github.com/ChantalMP/RaDialog)]
-
-**ML4H'25**
-- Rad-Phi4-Vision-CXR: A Compact Multimodal Assistant for Versatile Radiology Workflows [[paper](https://openreview.net/pdf?id=grywt6zKcy)]
-
-**ICMR'25**
-- ClearView: A Quality-aware Cross-modal Alignment Framework for CT Report Generation [[paper](https://dl.acm.org/doi/abs/10.1145/3731715.3733287)]
-
-**ICME'25**
-- Optimizing Efficiency and Visual-Textual Alignment for LLM-Based Radiology Report Generation [[paper](https://ieeexplore.ieee.org/document/11210172)][[code](https://github.com/zailongchen/R2Gen-EVA)]
-
-**WACV'25**
-- ORID: Organ-Regional Information Driven Framework for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/document/10943499)]
-  
-
-**BIBM'25**
-- Severity-Aware Radiology Report Generation: Knowledge Graph Expansion and Momentum-Guided Classification Enhancement [[paper](https://ieeexplore.ieee.org/abstract/document/11356157)]
-- MENet: Memory Enhanced Network for Chest Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11357108)]
-- Integrating Clinical Knowledge into Radiology Report Generation to Enhance Diagnosis [[paper](https://ieeexplore.ieee.org/abstract/document/11355985)]
-- LGFDTK-RAG: Dual-Conditioned RAG with Label-Guided Filtering and Dynamic Top-K for Automated ECG Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11356737)]
-- MCL-FENet: Multi-Level Contrastive Learning with Feature Enhancement Network for Medical Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11356329)]
-- CyclicAligner: Knowledge-Enhanced Cyclical Alignment for Chest X-Ray Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/11356622)]
-
-**Radiology'25**
-- Privacy-ensuring Open-weights Large Language Models Are Competitive with Closed-weights GPT-4o in Extracting Chest Radiography Findings from Free-Text Reports [[paper](https://pubs.rsna.org/doi/pdf/10.1148/radiol.240895)]
-- Diagnostic accuracy and clinical value of a domain-specific multimodal generative AI model for chest radiograph report generation [[paper](https://pubs.rsna.org/doi/full/10.1148/radiol.241476)]
-- RadSearch, a Semantic Search Model for Accurate Radiology Report Retrieval with Large Language Model Integration [[paper](https://pubs.rsna.org/doi/epdf/10.1148/radiol.240686)]
-- LLMs for Radiology Reports: From General Purpose to Light-Weight Domain Adaptation [[paper](https://pubs.rsna.org/doi/abs/10.1148/radiol.252524)]
-
-**TMM'25**
-- Adaptive Medical Topic Learning for Enhanced Fine-grained Cross-modal Alignment in Medical Report Generation[[paper](https://ieeexplore.ieee.org/abstract/document/10891465)]
-- Enhancing Radiology Report Generation via Multi-Phased Supervision [[paper](https://ieeexplore.ieee.org/document/11050440)][[code](https://github.com/zailongchen/MultiP-R2Gen)]
-
-**TIP'25**
-- Cross-Modal Causal Representation Learning for Radiology Report Generation [[paper](https://pubmed.ncbi.nlm.nih.gov/40378020/)][[code](https://github.com/WissingChen/CMCRL)]
-- VTAG: Visual-Textual Association Guided Radiology Reports Generation [[paper](https://ieeexplore.ieee.org/document/11218752)]
-- Local Alignment for Medical Vision-Language Pre-training [[paper](https://ieeexplore.ieee.org/document/11237022)]
-
-**TMI'25**
-- Spatio-Temporal and Retrieval-Augmented Modeling for Chest X-Ray Report Generation [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10938723)][[code](https://github.com/yangyan22/STREAM)]
-- Unlocking the Potential of Weakly Labeled Data: A Co-Evolutionary Learning Framework for Abnormality Detection and Report Generation [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10798513)][[code](https://github.com/jinghanSunn/CoE-DG)]
-- Large Language Model with Region-guided Referring and Grounding for CT Report Generation [[[paper](https://arxiv.org/pdf/2411.15539)][[code](https://github.com/zhi-xuan-chen/Reg2RG)]
-- A Chain of Diagnosis Framework for Accurate and Explainable Radiology Report Generation [[paper](https://pubmed.ncbi.nlm.nih.gov/40608887/)]
-- Enhancing Radiology Report Generation via Multi-Phased Supervision [[paper](https://ieeexplore.ieee.org/document/11050440)][[code](https://github.com/zailongchen/MultiP-R2Gen)]
-- Chest X-ray Foundation Model with Global and Local Representations Integration [[paper](https://pubmed.ncbi.nlm.nih.gov/40549526/)][[code](https://github.com/RPIDIAL/CheXFound)]
-- Ultrasound Report Generation with Cross-Modality Feature Alignment via Unsupervised Guidance [[paper](https://ieeexplore.ieee.org/document/10599394)][[code](https://github.com/LijunRio/Ultrasound-Report-Generation)]
-- Feature Decomposition via Shared Low-rank Matrix Recovery for CT Report Generation [[paper](https://ieeexplore.ieee.org/document/11224350)]
-
-**TNNLS'25**
-- OS-RRG: Observation State-Aware Radiology Report Generation With Balanced Diagnosis and Attention Intervention [[paper](https://ieeexplore.ieee.org/document/11095809)]
-- M4CXR: Exploring Multi-task Potentials of Multi-modal Large Language Models for Chest X-ray Interpretation [[paper](https://ieeexplore.ieee.org/document/11106750)][[code](https://github.com/deepnoid-ai/M4CXR-TNNLS)]
-
-**MedIA'25**
-- Report is a mixture of topics: Topic-guided radiology report generation [[paper](https://www.sciencedirect.com/science/article/pii/S1361841525001331#d1e2923)][[code](https://github.com/chentaohuang/Topic-Guided-Radiology-Report-Generation)]
-
-**Information Fusion'25**
-- Enhancing discriminative ability in multimodal LLMs: A contrastive learning approach for CT report generation [[paper](https://www.sciencedirect.com/science/article/pii/S1566253525003136)]
-
-**TBME'25**
-- ChatRadio-Valuer: A Chat Large Language Model for Generalizable Radiology Impression Generation on Multi-institution and Multi-system Data [[paper](https://ieeexplore.ieee.org/abstract/document/11122334)]
-
-**ESWA'25**
-- Recalibrated cross-modal alignment network for radiology report generation with weakly supervised contrastive learning [[paper](https://www.sciencedirect.com/science/article/pii/S0957417425000168)]
-- HKRG: Hierarchical knowledge integration for radiology report generation [[paper](https://www.sciencedirect.com/science/article/pii/S0957417425002441)][[code](https://github.com/LuckyAI-wb/HKRG)]
-- RRGMambaFormer: A hybrid Transformer-Mamba architecture for radiology report generation [[paper](https://www.sciencedirect.com/science/article/pii/S0957417425010413#sec4)][[code](https://github.com/lihongzhao99/RRGMambaFormer)]
-- Hybrid graph-based radiology report generation [[paper](https://www.sciencedirect.com/science/article/pii/S0957417425019475#absh001)]
-- Ultrasound report generation with fuzzy knowledge and multi-modal large language model [[paper](https://www.sciencedirect.com/science/article/pii/S0957417425021748)]
-- MedKit: Multi-level Feature Distillation with Knowledge Injection for Radiology Report Generation [[paper](https://www.sciencedirect.com/science/article/pii/S095741742502620X?__cf_chl_tk=oFOtcu7IJJha61Q_hVexYlmUQoA.MdgG5OJHrxCG9FM-1752642219-1.0.1.1-8xBE2YklvaJPQqXhQfFUokGxYK4VXMNdIbxdckSNGao#abs0001)][[code](https://github.com/sujaly/MedKit)]
-- DC-RRG: Diagnosis-Centered Cascaded Radiology Report Generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0957417425034992)]
-- Dynamic feature fusion guiding and multimodal large language model refining for medical image report generation [[paper](https://www.sciencedirect.com/science/article/pii/S095741742503698X)][[code](https://github.com/BearLiX/DFFG-MLLMR)]
-- CLARIFID: Improving Radiology Report Generation by Reinforcing Clinically Accurate Impressions and Enforcing Detailed Findings [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0957417425042484)][[code](https://github.com/IncheonYSH/CLARIFID)]
-
-**KBS'25**
-- Context-enhanced framework for medical image report generation using multimodal contexts [[paper](https://www.sciencedirect.com/science/article/pii/S0950705124015478)][[code](https://github.com/lihongzhao99/Context-Enhanced-Framework)]
-- Abnormal-region-aware Multi-modal Feature Fusion for medical report generation [[paper](https://www.sciencedirect.com/science/article/pii/S0950705125005842#sec4)]
-- Dual-Level Semantic Collaboration and Inference Network for Medical Image Report Generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S095070512501319X)]
-
-**JBHI'25**
-- Adapter-Enhanced Hierarchical Cross-Modal Pre-training for Lightweight Medical Report Generation [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10856362)][[code](https://github.com/OpenMICG/AHP)]
-- Benchmarking Radiology Report Generation from Noisy Free-Texts [[paper](https://ieeexplore.ieee.org/document/11002452)]
-- Automatic Radiology Report Generation Based on State-Space Model [[paper](https://ieeexplore.ieee.org/abstract/document/11037239)]
-- MFDP: Multi-View Feature Integration and Enhanced Disease Prompting for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/document/11244798)]
-- Multimodal Knowledge-Infused VLM for Respiratory Disease Prediction and Clinical Report Generation [[paper](https://pubmed.ncbi.nlm.nih.gov/41379904/)]
-
-**Neural Networks'25**
-- Radiology Report Generation via Visual-Semantic Ambivalence-Aware Network and Focal Self-Critical Sequence Training [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0893608025009827#preview-section-abstract)]
-
-**Pattern Recognition Letters'25**
-- Integrating clinical knowledge and imaging for medical report generation [[paper](https://www.sciencedirect.com/science/article/pii/S0167865525001783#sec4)]
-
-**Meta-Radiology'25**
-- S-RRG-Bench: Structured Radiology Report Generation with Fine-Grained Evaluation Framework [[paper](https://www.sciencedirect.com/science/article/pii/S2950162825000396)]
-- Chest X-ray Foundation Models: A Survey and Future Directions [[paper](https://www.sciencedirect.com/science/article/pii/S2950162825000712)]
-
-**WWW Companion'25**
-- Diversity-Augmented Diffusion Network With LLM Assistance For Radiology Report Generation [[paper](https://dl.acm.org/doi/10.1145/3701716.3717555)]
-
-**arXiv'25**
-- GIT-CXR: End-to-End Transformer for Chest X-Ray Report Generation [[paper](https://arxiv.org/pdf/2501.02598)]
-- Activating Associative Disease-Aware Vision Token Memory for LLM-Based X-ray Report Generation [[paper](https://arxiv.org/pdf/2501.03458)][[code](https://github.com/Event-AHU/Medical_Image_Analysis/tree/main)]
-- RadAlign: Advancing Radiology Report Generation with Vision-Language Concept Alignment [[paper](https://arxiv.org/abs/2501.07525)]
-- MedRAX: Medical Reasoning Agent for Chest X-ray [[paper](https://arxiv.org/pdf/2502.02673)][[code](https://github.com/bowang-lab/MedRAX)]
-- Libra: Leveraging Temporal Images for Biomedical Radiology Analysis [[paper](https://arxiv.org/abs/2411.19378)][[code](https://github.com/X-iZhang/Libra)]
-- On the Importance of Text Preprocessing for Multimodal Representation Learning and Pathology Report Generation [[paper](https://arxiv.org/abs/2502.19285)]
-- CoCa-CXR: Contrastive Captioners Learn Strong Temporal Structures for Chest X-Ray Vision-Language Understanding [[paper](https://arxiv.org/pdf/2502.20509)]
-- CheXalign: Preference fine-tuning in chest X-ray interpretation models without human feedback [[paper](https://arxiv.org/pdf/2410.07025)]
-- GEMA-Score: Granular Explainable Multi-Agent Score for Radiology Report Evaluation [[paper](https://arxiv.org/pdf/2503.05347)]
-- DAgent: A Relational Database-Driven Data Analysis Report Generation Agent [[paper](https://arxiv.org/pdf/2503.13269)]
-- LVMedR2: Perception and Reflection-driven Complex Reasoning for Medical Report Generation [[paper](https://arxiv.org/pdf/2504.02885)]
-- MedM-VL: What Makes a Good Medical LVLM? [[paper](https://arxiv.org/pdf/2504.04323)][[code](https://github.com/MSIIP/MedM-VL)]
-- Leveraging LLMs for Multimodal Retrieval-Augmented Radiology Report Generation via Key Phrase Extraction [[paper](https://arxiv.org/pdf/2504.07415)]
-- DualPrompt-MedCap: A Dual-Prompt Enhanced Approach for Medical Image Captioning [[paper](https://arxiv.org/pdf/2504.09598)]
-- DART: Disease-aware Image-Text Alignment and Self-correcting Re-alignment for Trustworthy Radiology Report Generation [[paper](https://arxiv.org/pdf/2504.11786)]
-- CRG Score: A Distribution-Aware Clinical Metric for Radiology Report Generation [[paper](https://openreview.net/forum?id=18nhqwH1Yq)]
-- Reason Like a Radiologist: Chain-of-Thought and Reinforcement Learning for Verifiable Report Generation [[paper](https://arxiv.org/pdf/2504.18453v1)]
-- MedPlan: A Two-Stage RAG-Based System for Personalized Medical Plan Generation [[paper](https://arxiv.org/pdf/2503.17900)]
-- CBM-RAG: Demonstrating Enhanced Interpretability in Radiology Report Generation with Multi-Agent RAG and Concept Bottleneck Models [[paper](https://arxiv.org/pdf/2504.20898v1)]
-- ChestX-Reasoner: Advancing Radiology Foundation Models with Reasoning through Step-by-Step Verification [[paper](https://arxiv.org/pdf/2504.20930v1)]
-- MicarVLMoE: A Modern Gated Cross-Aligned Vision-Language Mixture of Experts Model for Medical Image Captioning and Report Generation [[paper](https://arxiv.org/pdf/2504.20343v1)]
-- Large-scale Chest Disease Diagnosis Enabled by Multimodal Large Language Models with Self-Supervised Fine-Tuning [[paper](https://www.researchsquare.com/article/rs-6455853/v1)]
-- RadRevise: A Benchmark Dataset for Instruction-Based Radiology Report Editing [[paper](https://proceedings.mlr.press/v281/huang25a.html)]
-- Evaluating Vision Language Model Adaptations for Radiology Report Generation in Low-Resource Languages [[paper](https://arxiv.org/pdf/2505.01096v1)]
-- AOR: Anatomical Ontology-Guided Reasoning for Medical Large Multimodal Model in Chest X-Ray Interpretation [[paper](https://arxiv.org/abs/2505.02830)][[code](https://github.com/Liqq1/AOR)]
-- DDaTR: Dynamic Difference-aware Temporal Residual Network for Longitudinal Radiology Report Generation [[paper](https://arxiv.org/pdf/2505.03401v1)][[code](https://github.com/xmed-lab/DDaTR)]
-- CheXLearner: Text-Guided Fine-Grained Representation Learning for Progression Detection [[paper](https://arxiv.org/pdf/2505.06903)]
-- Describe Anything in Medical Images [[paper](https://arxiv.org/pdf/2505.05804)]
-- A Multimodal Multi-Agent Framework for Radiology Report Generation [[paper](https://arxiv.org/pdf/2505.09787v1)]
-- Ultrasound Report Generation with Multimodal Large Language Models for Standardized Texts [[paper](https://arxiv.org/pdf/2505.08838)]
-- CorBenchX: Large-Scale Chest X-Ray Error Dataset and Vision–Language Model Benchmark for Report Error Correction [[paper](https://arxiv.org/pdf/2505.12057v1)][[code](https://github.com/Liqq1/CorBenchX)]
-- Online Iterative Self-Alignment for Radiology Report Generation [[paper](https://arxiv.org/pdf/2505.11983v1)]
-- CXReasonBench: A Benchmark for Evaluating Structured Diagnostic Reasoning in Chest X-rays [[paper](https://arxiv.org/pdf/2505.18087)][[code](https://github.com/ttumyche/CXReasonBench)]
-- CLEAR: A Clinically-Grounded Tabular Framework for Radiology Report Evaluation [[paper](https://arxiv.org/pdf/2505.16325)]
-- Grounding Chest X-Ray Visual Question Answering with Generated Radiology Reports [[paper](https://arxiv.org/pdf/2505.16624)]
-- MRGAgents: A Multi-Agent Framework for Improved Medical Report Generation with Med-LVLMs [[paper](https://arxiv.org/pdf/2505.18530)]
-- LUNGUAGE: A Benchmark for Structured and Sequential Chest X-ray Interpretation [[paper](https://arxiv.org/pdf/2505.21190)][[code](https://github.com/SuperSupermoon/Lunguage)]
-- Look & Mark: Leveraging Radiologist Eye Fixations and Bounding boxes in Multimodal Large Language Models for Chest X-ray Report Generation [[paper](https://arxiv.org/pdf/2505.22222v1)]
-- Interpreting Chest X-rays Like a Radiologist: A Benchmark with Clinical Reasoning [[paper](https://arxiv.org/pdf/2505.23143v1)][[code](https://github.com/guanjinquan/CXRTrek)]
-- Automated Structured Report Generation [[paper](https://arxiv.org/pdf/2505.24223v1)][[project](https://stanford-aimi.github.io/srrg.html)]
-- Structuring Radiology Reports: Challenging LLMs with Lightweight Models [[paper](https://arxiv.org/pdf/2506.00200v1)][[project](https://stanford-aimi.github.io/structuring.html)]
-- Evaluating Large Language Models for Zero-Shot Disease Labeling in CT Radiology Reports Across Organ Systems [[paper](https://arxiv.org/pdf/2506.03259v1)]
-- ReXVQA: A Large-scale Visual Question Answering Benchmark for Generalist Chest X-ray Understanding [[paper](https://arxiv.org/pdf/2506.04353)]
-- Lingshu: A Generalist Foundation Model for Unified Multimodal Medical Understanding and Reasoning [[paper](https://arxiv.org/pdf/2506.07044)][[project](https://alibaba-damo-academy.github.io/lingshu/)]
-- Multimodal Large Language Models for Medical Report Generation via Customized Prompt Tuning [[paper](https://arxiv.org/pdf/2506.15477v1)].
-- Grounding Chest X-Ray Visual Question Answering with Generated Radiology Reports [[paper](https://arxiv.org/pdf/2505.16624)]
-- Recurrent Visual Feature Extraction and Stereo Attentions for CT Report Generation [[paper](https://arxiv.org/pdf/2506.19665)]
-- Bridging Vision and Language: Optimal Transport-Driven Radiology Report Generation via LLMs [[paper](https://arxiv.org/abs/2507.03908v1)]
-- MedGemma Technical Report [[paper](http://arxiv.org/pdf/2507.05201v1)]
-- MCA-RG: Enhancing LLMs with Medical Concept Alignment for Radiology Report Generation [[paper](https://arxiv.org/pdf/2507.06992v1)]
-- Learnable Retrieval Enhanced Visual-Text Alignment and Fusion for Radiology Report Generation [[paper](https://arxiv.org/pdf/2507.07568)][[code](https://github.com/banbooliang/REVTAF-RRG)]
-- A Unified Platform for Radiology Report Generation and Clinician-Centered AI Evaluation [[paper](https://www.medrxiv.org/content/10.1101/2025.07.07.25331018v1#:~:text=In%20this%20study%2C%20we%20conducted%20a%20radiology-focused%20Turing,two%20core%20modules%3A%20Report%20Generation%20and%20Report%20Evaluation.)]
-- Semantically Informed Salient Regions Guided Radiology Report Generation [[paper](https://arxiv.org/pdf/2507.11015)]
-- CLARIFID: Improving Radiology Report Generation by Reinforcing Clinically Accurate Impressions and Enforcing Detailed Findings [[paper](https://arxiv.org/pdf/2507.17234v1)]
-- SURE-Med: Systematic Uncertainty Reduction for Enhanced Reliability in Medical Report Generation [[paper](https://arxiv.org/pdf/2508.01693v1)]
-- R2GenKG: Hierarchical Multi-modal Knowledge Graph for LLM-based Radiology Report Generation [[paper](https://arxiv.org/pdf/2508.03426v1)][[code](https://github.com/Event-AHU/Medical_Image_Analysis)]
-- Clinically Grounded Agent-based Report Evaluation: An Interpretable Metric for Radiology Report Generation [[paper](https://arxiv.org/pdf/2508.02808v1)]
-- PET2Rep: Towards Vision-Language Model-Drived Automated Radiology Report Generation for Positron Emission Tomography [[paper](https://arxiv.org/pdf/2508.04062)]
-- Med-GLIP: Advancing Medical Language-Image Pre-training with Large-scale Grounded Dataset [[paper](https://arxiv.org/pdf/2508.10528v1)]
-- AMRG: Extend Vision Language Models for Automatic Mammography Report Generation [[paper](https://arxiv.org/pdf/2508.09225)]
-- HeteroRAG: A Heterogeneous Retrieval-Augmented Generation Framework for Medical Vision Language Tasks [[paper](https://arxiv.org/pdf/2508.12778v1)]
-- PriorRG: Prior-Guided Contrastive Pre-training and Coarse-to-Fine Decoding for Chest X-ray Report Generation [[paper](https://arxiv.org/abs/2508.05353)][[code](https://github.com/mk-runner/PriorRG)]
-- Eyes on the Image: Gaze Supervised Multimodal Learning for Chest X-ray Diagnosis and Report Generation [[paper](https://arxiv.org/pdf/2508.13068v1)]
-- EchoVLM: Dynamic Mixture-of-Experts Vision-Language Model for Universal Ultrasound Intelligence [[paper](https://arxiv.org/pdf/2509.14977v1)]
-- OraPO: Oracle-educated Reinforcement Learning for Data-efficient and Factual Radiology Report Generation [[paper](https://arxiv.org/pdf/2509.18600v1)]
-- Citrus-V: Advancing Medical Foundation Models with Unified Medical Image Grounding for Clinical Reasoning [[paper](https://arxiv.org/pdf/2509.19090)]
-- RadAgents: Multimodal Agentic Reasoning for Chest X-ray Interpretation with Radiologist-like Workflows [[paper](https://arxiv.org/pdf/2509.20490)]
-- Random Direct Preference Optimization for Radiography Report Generation [[paper](https://arxiv.org/pdf/2509.21351v1)]
-- Phrase-grounded Fact-checking for Automatically Generated Chest X-ray Reports [[paper](https://arxiv.org/pdf/2509.21356v1)]
-- EditGRPO: Reinforcement Learning with Post-Rollout Edits for Clinically Accurate Chest X-Ray Report Generation [[paper](https://arxiv.org/pdf/2509.22812v1)][[code](https://github.com/taokz/EditGRPO)]
-- TemMed-Bench: Evaluating Temporal Medical Image Reasoning in Vision-Language Models [[paper](https://arxiv.org/pdf/2509.25143v1)][[code](https://temmedbench.github.io/)]
-- CCD: Mitigating Hallucinations in Radiology MLLMs via Clinical Contrastive Decoding [[paper](https://arxiv.org/pdf/2509.23379v1)]
-- Self-Supervised Anatomical Consistency Learning for Vision-Grounded Medical Report Generation [[paper](https://arxiv.org/pdf/2509.25963)]
-- Automated Structured Radiology Report Generation with Rich Clinical Context [[paper](https://github.com/vuno/contextualized-srrg)][[code](https://github.com/vuno/contextualized-srrg)]
-- Discrete Diffusion Models with MLLMs for Unified Medical Multimodal Generation [[paper](https://arxiv.org/pdf/2510.06131v1)]
-- A Review of Longitudinal Radiology Report Generation: Dataset Composition, Methods, and Performance Evaluation [[paper](https://arxiv.org/pdf/2510.12444v1)]
-- EMRRG: Efficient Fine-Tuning Pre-trained X-ray Mamba Networks for Radiology Report Generation [[paper](https://arxiv.org/pdf/2510.16776v1)][[code](https://github.com/Event-AHU/Medical_Image_Analysis)]
-- CXRAgent: Director-Orchestrated Multi-Stage Reasoning for Chest X-Ray Interpretation [[paper](https://arxiv.org/pdf/2510.21324v1)]
-- Reasoning Visual Language Model for Chest X-Ray Analysis [[paper](https://arxiv.org/pdf/2510.23968)][[code](https://github.com/NVIDIA-Medtech)]
-- Current Landscape of Automatic Radiology Report Generation with Deep Learning: An Exploratory Systematic Review [[paper](https://www.preprints.org/frontend/manuscript/6461e8366312f9d71b9a431ca4a4d937/download_pub)]
-- Medical Report Generation: A Hierarchical Task Structure-Based Cross-Modal Causal Intervention Framework [[paper](https://arxiv.org/pdf/2511.02271v1)]
-- UniMedVL: Unifying Medical Multimodal Understanding and Generation through Observation-Knowledge-Analysis [[paper](https://arxiv.org/pdf/2510.15710)][[code](https://github.com/uni-medical/UniMedVL)]
-- PETAR: Localized Findings Generation with Mask-Aware Vision-Language Modeling for PET Automated Reporting [[paper](https://arxiv.org/pdf/2510.27680)]
-- Radiology Workflow-Guided Hierarchical Reinforcement Fine-Tuning for Medical Report Generation [[paper](https://arxiv.org/pdf/2511.10065v1)]
-- A Disease-Aware Dual-Stage Framework for Chest X-ray Report Generation [[paper](https://arxiv.org/pdf/2511.12259v1)]
-- Boosting Medical Visual Understanding From Multi-Granular Language Learning [[paper](https://openreview.net/forum?id=ccjukmExrB)][[code](https://github.com/HUANGLIZI/MGLL)]
-- Closing the Performance Gap Between AI and Radiologists in Chest X-Ray Reporting [[paper](https://arxiv.org/pdf/2511.21735v1)]
-- Structure is Supervision: Multiview Masked Autoencoders for Radiology [[paper](https://arxiv.org/pdf/2511.22294v1)]
-- Generalised Medical Phrase Grounding [[paper](https://arxiv.org/pdf/2512.01085v1)]
-- Radiologist Copilot: An Agentic Assistant with Orchestrated Tools for Radiology Reporting with Quality Control [[paper](https://arxiv.org/pdf/2512.02814)]
-- Beyond N-grams: A Hierarchical Reward Learning Framework for Clinically-Aware Medical Report Generation [[paper](https://arxiv.org/abs/2512.02710)]
-- MRG-R1: Reinforcement Learning for Clinically Aligned Medical Report Generation [[paper](https://arxiv.org/pdf/2512.16145v1)]
-- Visual Alignment of Medical Vision-Language Models for Grounded Radiology Report Generation [[paper](https://arxiv.org/pdf/2512.16201v1)]
-- LDP: Parameter-Efficient Fine-Tuning of Multimodal LLM for Medical Report Generation [[paper](https://arxiv.org/pdf/2512.10750)]
-  
----
-
-### 2024
-**Nature Medicine'24**
-- Collaboration between clinicians and vision–language models in radiology report generation [[paper](https://www.nature.com/articles/s41591-024-03302-1)]
-- A Generalist Vision-Language Foundation Model for Diverse Biomedical Tasks [[paper](https://arxiv.org/abs/2305.17100)][[code](https://github.com/taokz/BiomedGPT)]
-
-**Nature Communications'24**
-- Enhancing representation in radiography-reports foundation model: a granular alignment algorithm using masked contrastive learning [[paper](https://www.nature.com/articles/s41467-024-51749-0)][[code](https://github.com/SZUHvern/MaCo)]
-
-**NEJM AI'24**
-- Towards Generalist Biomedical AI [[paper](https://arxiv.org/pdf/2307.14334)][[code](https://github.com/kyegomez/Med-PaLM/tree/main)]
-
-**AAAI'24**
-- Automatic Radiology Reports Generation via Memory Alignment Network [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/28279)]
-- PromptMRG: Diagnosis-Driven Prompts for Medical Report Generation [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/28038)][[code](https://github.com/jhb86253817/PromptMRG)]
-- Bootstrapping Large Language Models for Radiology Report Generation [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/29826)] [[code](https://github.com/synlp/R2-LLM)]
-
-**CVPR'24**
-- Instance-level Expert Knowledge and Aggregate Discriminative Attention for Radiology Report Generation [[paper](https://openaccess.thecvf.com/content/CVPR2024/html/Bu_Instance-level_Expert_Knowledge_and_Aggregate_Discriminative_Attention_for_Radiology_Report_CVPR_2024_paper.html)] [[code](https://github.com/hnjzbss/EKAGen)]
-- AHIVE: Anatomy-aware Hierarchical Vision Encoding for Interactive Radiology Report Retrieval [[paper](https://openaccess.thecvf.com/content/CVPR2024/html/Yan_AHIVE_Anatomy-aware_Hierarchical_Vision_Encoding_for_Interactive_Radiology_Report_Retrieval_CVPR_2024_paper.html)] [[code]]
-- InVERGe: Intelligent Visual Encoder for Bridging Modalities in Report Generation (**Workshop**) [[paper](https://openaccess.thecvf.com/content/CVPR2024W/MULA/papers/Deria_InVERGe_Intelligent_Visual_Encoder_for_Bridging_Modalities_in_Report_Generation_CVPRW_2024_paper.pdf)][[code]( https://github.com/labsroy007/InVERGe)]
-- MedM2G: Unifying Medical Multi-Modal Generation via Cross-Guided Diffusion with Visual Invariant [[paper](https://arxiv.org/pdf/2403.04290)]
-- Decomposing Disease Descriptions for Enhanced Pathology Detection: A Multi-Aspect Vision-Language Pre-training Framework [[paper](https://arxiv.org/pdf/2403.07636)][[code](https://github.com/hieuvmphan/CVPR2024_MAVL)]
-
-**ACL'24**
-- DocLens: Multi-aspect Fine-grained Evaluation for Medical Text Generation [[paper](https://arxiv.org/abs/2311.09581)][[code](https://github.com/yiqingxyq/DocLens)]
-- SICAR at RRG2024: GPU Poor’s Guide to Radiology Report Generation [[paper](https://aclanthology.org/2024.bionlp-1.55.pdf)]
-- BiCAL: Bi-directional Contrastive Active Learning for Clinical Report Generation [[paper](https://aclanthology.org/2024.bionlp-1.25.pdf)]
-- CID at RRG24: Attempting in a Conditionally Initiated Decoding of Radiology Report Generation with Clinical Entities [[paper](https://aclanthology.org/2024.bionlp-1.49.pdf)]
-- RadGraph-XL: A Large-Scale Expert-Annotated Dataset for Entity and Relation Extraction from Radiology Reports [[paper](https://aclanthology.org/2024.findings-acl.765.pdf#page=10&zoom=100,401,596)][[code](https://github.com/Stanford-AIMI/radgraph)]
-- MLeVLM: Improve Multi-level Progressive Capabilities based on Multimodal Large Language Model for Medical Visual Question Answering [[paper](https://aclanthology.org/2024.findings-acl.296.pdf)][[code](https://github.com/RyannChenOO/MLeVLM)]
-- Fine-Grained Image-Text Alignment in Medical Imaging Enables Explainable Cyclic Image-Report Generation [[paper](https://aclanthology.org/2024.acl-long.514.pdf)]
-
-**ICLR'24**
-- LLM-CXR: Instruction-Finetuned LLM for CXR Image Understanding and Generation [[paper](https://arxiv.org/abs/2305.11490)][[code](https://github.com/hyn2028/llm-cxr)]
-
-**NIPS'24**
-- BenchX: A Unified Benchmark Framework for Medical Vision-Language Pretraining on Chest X-Rays [[paper](https://arxiv.org/pdf/2410.21969)][[code](https://github.com/yangzhou12/BenchX)]
-- JRadiEvo: A Japanese Radiology Report Generation Model Enhanced by Evolutionary Optimization of Model Merging (**NIPS Workshop**)[[paper](https://arxiv.org/pdf/2411.09933)]
-- Electrocardiogram Report Generation and Question Answering via Retrieval-Augmented Self-Supervised Modeling (**NIPS Workshop**)[[paper](https://openreview.net/forum?id=1oDKH0lox4)]
-- Uni-Med: A Unified Medical Generalist Foundation Model For Multi-Task Learning Via Connector-MoE [[paper](https://arxiv.org/pdf/2409.17508)][[code](https://github.com/MSIIP/Uni-Med)]
-- MediQ: Question-Asking LLMs for Adaptive and Reliable Clinical Reasoning [[paper](https://arxiv.org/pdf/2406.00922)][[code](https://github.com/stellalisy/mediQ/tree/main)]
-
-**ACM MM'24**
-- Medical Report Generation via Multimodal Spatio-Temporal Fusion [[paper](https://openreview.net/pdf?id=XKs7DR9GAK)]
-- Diffusion Networks with Task-Specific Noise Control for Radiology Report Generation [[paper](https://openreview.net/pdf?id=kbdeQmw2ny)]
-- Divide and Conquer: Isolating Normal-Abnormal Attributes in Knowledge Graph-Enhanced Radiology Report Generation [[paper](https://openreview.net/forum?id=TuU8TQVOoj)][[code](https://github.com/ecoxial2007/DCG_Enhanced_distilGPT2)]
-- In-context Learning for Zero-shot Medical Report Generation [[paper](https://openreview.net/pdf?id=8zyG2eUgVE)]
-
-**ECCV'24**
-- HERGen: Elevating Radiology Report Generation with Longitudinal Data [[paper](https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/07209.pdf)] [[code](https://github.com/fuying-wang/HERGen)]
-- Contrastive Learning with Counterfactual Explanations for Radiology Report Generation [[paper](https://arxiv.org/abs/2407.14474)]
-- ChEX: Interactive Localization and Region Description in Chest X-rays[[paper](https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/03114.pdf)][[code](https://github.com/philip-mueller/chex)]
-- MedRAT: Unpaired Medical Report Generation via Auxiliary Tasks[[paper](https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/08947.pdf)][[code](https://github.com/eladhi/MedRAT)]
-
-**EMNLP'24**
-- ICON: Improving Inter-Report Consistency of Radiology Report Generation via Lesion-aware Mix-up Augmentation [[paper](https://arxiv.org/abs/2402.12844)] [[code](https://github.com/wjhou/ICon)]
-- Divide and Conquer Radiology Report Generation via Observation Level Fine-grained Pretraining and Prompt Tuning [[paper](https://aclanthology.org/2024.emnlp-main.433.pdf)]
-
-**MICCAI'24**
-- Textual Inversion and Self-supervised Refinement for Radiology Report Generation [[paper](https://arxiv.org/pdf/2405.20607)] [[code]]
-- Structural Entities Extraction and Patient Indications Incorporation for Chest X-ray Report Generation [[paper](https://arxiv.org/abs/2405.14905)] [[code](https://github.com/mk-runner/SEI)]
-- CT2Rep: Automated Radiology Report Generation for 3D Medical Imaging [[paper](https://arxiv.org/abs/2403.06801)] [[code](https://github.com/ibrahimethemhamamci/CT2Rep)]
-- WsiCaption: Multiple Instance Generation of Pathology Reports for Gigapixel Whole Slide Images [[paper](https://arxiv.org/abs/2311.16480)][[code](https://github.com/cpystan/Wsi-Caption)]
-- HistGen: Histopathology Report Generation via Local-Global Feature Encoding and Cross-modal Context Interaction [[paper](https://arxiv.org/abs/2403.05396)][[data](https://github.com/dddavid4real/HistGen)].
-- Multivariate Cooperative Game for Image-Report Pairs: Hierarchical Semantic Alignment for Medical Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-031-72384-1_29)]
-- MRScore: Evaluating Medical Report with LLM-Based Reward System [[paper](https://link.springer.com/chapter/10.1007/978-3-031-72384-1_27)]
-- Energy-Based Controllable Radiology Report Generation with Medical Knowledge [[paper](https://link.springer.com/chapter/10.1007/978-3-031-72086-4_23)]
-- GMoD: Graph-driven Momentum Distillation Framework with Active Perception of Disease Severity for Radiology Report Generation [[paper](https://papers.miccai.org/miccai-2024/paper/1733_paper.pdf)][[code](https://github.com/xzp9999/GMoD-mian)]
-- TiBiX: Leveraging Temporal Information for Bidirectional X-ray and Report Generation (**MICCAI Workshop**)[[paper](https://arxiv.org/pdf/2403.13343)][[code](https://github.com/BioMedIA-MBZUAI/TiBiX)]
-- Multivariate Cooperative Game for Image-Report Pairs: Hierarchical Semantic Alignment for Medical Report Generation [[paper](https://papers.miccai.org/miccai-2024/paper/1475_paper.pdf)]
-- KARGEN: Knowledge-Enhanced Automated Radiology Report Generation Using Large Language Models [[paper](https://link.springer.com/chapter/10.1007/978-3-031-72086-4_36)]
-- Continually Tuning a Large Language Model for Multi-domain Radiology Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-031-72086-4_17)]
-- Diagnose with Uncertainty Awareness: Diagnostic Uncertainty Encoding Framework for Radiology Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-031-73158-7_4)]
-
-
-**CIKM'24**
-- CLR2G: Cross-modal Contrastive Learning on Radiology Report [[paper](https://dl.acm.org/doi/pdf/10.1145/3627673.3679668)]
-
-**ICASSP'24**
-- Improving Radiology Report Generation with D2-Net: When Diffusion Meets Discriminator [[paper](https://ieeexplore.ieee.org/document/10448326)]
-
-**WACV'24**
-- Complex Organ Mask Guided Radiology Report Generation [[paper](https://arxiv.org/pdf/2311.02329)][[code](https://github.com/GaryGuTC/COMG_model)]
-- CXR-IRGen: An Integrated Vision and Language Model for the Generation of Clinically Accurate Chest X-Ray Image-Report Pairs [[paper](https://openaccess.thecvf.com/content/WACV2024/html/Shentu_CXR-IRGen_An_Integrated_Vision_and_Language_Model_for_the_Generation_WACV_2024_paper.html)][[code](https://github.com/junjie-shentu/CXR-IRGen)]
-
-**ACCV'24**
-- FG-CXR: A Radiologist-Aligned Gaze Dataset for Enhancing Interpretability in Chest X-Ray Report Generation [[paper](https://vision.csee.wvu.edu/publications/phamHBPPADNWNL24accv.pdf)][[code](https://github.com/UARK-AICV/FG-CXR)]
-
-**ML4H'24**
-- MedAutoCorrect: Image-Conditioned Autocorrection in Medical Reporting [[paper](https://arxiv.org/abs/2412.02971)]
-
-**MedIA'24**
-- From Vision to Text: A Comprehensive Review of Natural Image Captioning in Medical Diagnosis and Radiology Report Generation [[paper](https://www.sciencedirect.com/science/article/pii/S1361841524001890)]
-- Enhancing the vision–language foundation model with key semantic knowledge-emphasized report refinement [[paper](https://www.sciencedirect.com/science/article/pii/S136184152400224X)]
-- DACG: Dual Attention and Context Guidance Model for Radiology Report Generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S1361841524003025)][[code](https://github.com/LangWY/DACG)]
-- Dual-Modality Visual Feature Flow for Medical Report Generation [[paper](https://www.sciencedirect.com/science/article/pii/S1361841524003384)]
-
-**TMI'24**
-- Multi-grained Radiology Report Generation with Sentence-level Image-language Contrastive Learning [[paper](https://ieeexplore.ieee.org/abstract/document/10458706)] [[code]]
-- SGT++: Improved Scene Graph-Guided Transformer for Surgical Report Generation [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10330637)][[code]]
-- PhraseAug: An Augmented Medical Report Generation Model with Phrasebook [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10560051)] [[code]]
-- Token-Mixer: Bind Image and Text in One Embedding Space for Medical Image Reporting [[paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10552817)] [[code](https://github.com/yangyan22/Token-Mixer)]
-- An Organ-aware Diagnosis Framework for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/document/10579857)]
-- Attribute Prototype-guided Iterative Scene Graph for Explainable Radiology Report Generation [[paper](https://ieeexplore.ieee.org/document/10587279)]
-- A New Benchmark: Clinical Uncertainty and Severity Aware Labeled Chest X-Ray Images with Multi-Relationship Graph Learning [[paper](https://ieeexplore.ieee.org/abstract/document/10632161)]
-- LHR-RFL: Linear Hybrid-Reward based Reinforced Focal Learning for Automatic Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/10769570)]
-- Unlocking the Potential of Weakly Labeled Data: A Co-Evolutionary Learning Framework for Abnormality Detection and Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/10798513)][[code](https://github.com/jinghanSunn/CoE-DG)]
-
-**TMM'24**
-- Semi-Supervised Medical Report Generation via Graph-Guided Hybrid Feature Consistency [[paper](https://ieeexplore.ieee.org/document/10119200)][[code]]
-- Multi-Level Objective Alignment Transformer for Fine-Grained Oral Panoramic X-Ray Report Generation [[paper](https://ieeexplore.ieee.org/document/10443573)][[code]]
-- - Knowledge-guided Cross-modal Alignment and Progressive Fusion for Chest X-ray Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/10814666)]
-
-**JBHI'24**
-- CAMANet: Class Activation Map Guided Attention Network for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/document/10400776)] [[code](https://github.com/Markin-Wang/CAMANet)]
-- TSGET: Two-Stage Global Enhanced Transformer for Automatic Radiology Report Generation [[paper](https://ieeexplore.ieee.org/document/10381879)] [[code](https://github.com/Markin-Wang/CAMANet)]
-- Eye Gaze Guided Cross-Modal Alignment Network for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/10596697)]
-
-**Expert Systems with Applications'24**
-- CheXReport: A transformer-based architecture to generate chest X-ray reports suggestions [[paper](https://www.sciencedirect.com/science/article/pii/S0957417424015112)][[code](https://github.com/felipezeiser/CheXReport)]
-- ChatGPT based contrastive learning for radiology report summarization [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0957417424026940#fn2)][[code](https://github.com/jzw1234/Chataug-CCL)]
-
-**Knowledge-Based Systems'24**
-- Automatic medical report generation combining contrastive learning and feature difference [[paper](https://www.sciencedirect.com/science/article/pii/S0950705124012644)]
-- Context-enhanced framework for medical image report generation using multimodal contexts [[paper](https://www.sciencedirect.com/science/article/pii/S0950705124015478?__cf_chl_tk=XNRc.olaVDjnhJnTWepTvkDVdFSF.zB1psud1BE1.fA-1735525303-1.0.1.1-UA6DRcLBfYu72UCvVi5Z4irCy6hDimukzeMEmmNruVI)][[[code](https://github.com/lz19991122/Context-Enhanced-Framework/tree/main)]
-
-**Neurocomputing'24**
-- Improving radiology report generation with multi-grained abnormality prediction [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0925231224008932)]
-- An open chest X-ray dataset with benchmarks for automatic radiology report generation in French [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0925231224012499)][[data](https://www.casia-cxr.net/)]
-- Trust it or not: Confidence-guided automatic radiology report generation [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0925231224001450)]
-- VG-CALF: A vision-guided cross-attention and late-fusion network for radiology images in medical visual question answering [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0925231224015017)]
-
-
-**Academic Radiology'24**
-- Practical Evaluation of ChatGPT Performance for Radiology Report Generation [[paper](https://www.sciencedirect.com/science/article/pii/S1076633224004549)]
-
-**Radiology'24**
-- Constructing a Large Language Model to Generate Impressions from Findings in Radiology Reports [[paper](https://pubs.rsna.org/doi/pdf/10.1148/radiol.240885)]
-- Comparing Commercial and Open-Source Large Language Models for Labeling Chest Radiograph Reports [[paper](https://pubs.rsna.org/doi/epdf/10.1148/radiol.241139)]
-
-
-**IEEE Transactions on Emerging Topics in Computational Intelligence'24**
-- End-to-End Clustering Enhanced Contrastive Learning for Radiology Reports Generation [[paper](https://ieeexplore.ieee.org/abstract/document/10663478)]
-
-**arXiv papers'24**
-- Factual Serialization Enhancement: A Key Innovation for Chest X-ray Report Generation [[paper](https://arxiv.org/abs/2405.09586)] [[code](https://github.com/mk-runner/FSE)]
-- FITA: Fine-grained Image-Text Aligner for Radiology Report Generation [[paper](https://arxiv.org/abs/2405.00962)] [[code]]
-- GREEN: Generative Radiology Report Evaluation and Error Notation [[paper](https://arxiv.org/abs/2405.03595)] [[code]]
-- CheXpert Plus: Hundreds of Thousands of Aligned Radiology Texts, Images and Patients [[paper](https://arxiv.org/abs/2405.19538)] [[code](https://github.com/Stanford-AIMI/chexpert-plus)]
-- Topicwise Separable Sentence Retrieval for Medical Report Generation [[paper](https://arxiv.org/abs/2405.04175)] [[code]]
-- Dia-LLaMA: Towards Large Language Model-driven CT Report Generation [[paper](https://arxiv.org/abs/2403.16386)] [[code]]
-- MAIRA-2: Grounded Radiology Report Generation [[paper](https://arxiv.org/pdf/2406.04449)][[code]]
-- Benchmarking and Boosting Radiology Report Generation for 3D High-Resolution Medical Images [[paper](https://arxiv.org/pdf/2406.07146)]
-- The Impact of Auxiliary Patient Data on Automated Chest X-Ray Report Generation and How to Incorporate It [[paper](https://arxiv.org/pdf/2406.13181)][[code](https://anonymous.4open.science/r/anon-D83E/README.md)]
-- Improving Expert Radiology Report Summarization by Prompting Large Language Models with a Layperson Summary [[paper](https://arxiv.org/pdf/2406.13181)]
-- Fact-Aware Multimodal Retrieval Augmentation for Accurate Medical Radiology Report Generation [[paper](https://arxiv.org/pdf/2407.15268)]
-- X-ray Made Simple: Radiology Report Generation and Evaluation with Layman's Terms [[paper](https://arxiv.org/abs/2406.17911)]
-- Multi-modal vision-language model for generalizable annotation-free pathology localization and clinical diagnosis [[paper](https://arxiv.org/pdf/2401.02044)][[code](https://github.com/YH0517/AFLoc)]
-- Direct Preference Optimization for Suppressing Hallucinated Prior Exams in Radiology Report Generation [[paper]](https://arxiv.org/pdf/2406.06496)]
-- R2GenCSR: Retrieving Context Samples for Large Language Model based X-ray Medical Report Generation [[paper](https://arxiv.org/pdf/2408.09743)][[code](https://github.com/Event-AHU/Medical_Image_Analysis/tree/main/R2GenCSR)]
-- Direct Preference Optimization for Suppressing Hallucinated Prior Exams in Radiology Report Generation [[paper](https://arxiv.org/pdf/2406.06496)]
-- M4CXR: Exploring Multi-task Potentials of Multi-modal Large Language Models for Chest X-ray Interpretation [[paper](https://arxiv.org/pdf/2408.16213)]
-- Medical Report Generation Is A Multi-label Classification Problem [[paper](https://arxiv.org/pdf/2409.00250)]
-- KARGEN: Knowledge-enhanced Automated Radiology Report Generation Using Large Language Models [[paper](https://arxiv.org/pdf/2409.05370)]
-- Democratizing MLLMs in Healthcare: TinyLLaVA-Med for Efficient Healthcare Diagnostics in Resource-Constrained Settings [[paper](https://arxiv.org/pdf/2409.12184)]
-- SLaVA-CXR: Small Language and Vision Assistant for Chest X-ray Report Automation [[paper](https://arxiv.org/pdf/2409.13321)]
-- Expert-level vision-language foundation model for real-world radiology and comprehensive evaluation [[paper](https://arxiv.org/pdf/2409.16183)]
-- CXPMRG-Bench: Pre-training and Benchmarking for X-ray Medical Report Generation on CheXpert Plus Dataset [[paper](https://arxiv.org/pdf/2410.00448)][[code](https://github.com/Event-AHU/Medical_Image_Analysis)]
-- 3D-CT-GPT: Generating 3D Radiology Reports through Integration of Large Vision-Language Models [[paper](https://arxiv.org/pdf/2409.19330)]
-- Image-aware Evaluation of Generated Medical Reports [[paper](https://arxiv.org/pdf/2410.17357)]
-- Text-Enhanced Medical Visual Question Answering [[paper](https://cs231n.stanford.edu/2024/papers/text-enhanced-medical-visual-question-answering.pdf)]
-- MMed-RAG: Versatile Multimodal RAG System for Medical Vision Language Models [[paper](arxiv.org/abs/2410.13085)][[code](https://github.com/richard-peng-xia/MMed-RAG)]
-- R2GEN-MAMBA:ASELECTIVESTATESPACEMODELFORRADIOLOGYREPORT GENERATION [[paper](https://arxiv.org/pdf/2410.18135)][[code](https://github.com/YonghengSun1997/R2Gen-Mamba)]
-- Uncovering Knowledge Gaps in Radiology Report Generation Models through Knowledge Graphs[[paper](https://arxiv.org/abs/2408.14397)][[code](https://github.com/rajpurkarlab/ReXKG)]
-- Diff-CXR: Report-to-CXR generation through a disease-knowledge enhanced diffusion model [[paper](https://arxiv.org/pdf/2410.20165)]
-- FINE-GRAINED VERIFIERS: PREFERENCE MODELING AS NEXT-TOKEN PREDICTION IN VISION-LANGUAGE ALIGNMENT [[paper](https://arxiv.org/pdf/2410.14148)]
-- Decoding Report Generators: A Cyclic Vision-Language Adapter for Counterfactual Explanations [[paper](https://arxiv.org/pdf/2411.05261)]
-- MCL: Multi-view Enhanced Contrastive Learning for Chest X-ray Report Generation [[paper](https://arxiv.org/abs/2411.10224)][[code](https://github.com/mk-runner/MCL)]
-- Anatomy-Guided Radiology Report Generation with Pathology-Aware Regional Prompts [[paper](https://arxiv.org/pdf/2411.10789)]
-- MAIRA-Seg: Enhancing Radiology Report Generation with Segmentation-Aware Multimodal Large Language Models [[paper](https://arxiv.org/pdf/2411.11362)]
-- TRRG: Towards Truthful Radiology Report Generation With Cross-modal Disease Clue Enhanced Large Language Model [[paper](https://arxiv.org/abs/2408.12141)]
-- ORID: Organ-Regional Information Driven Framework for Radiology Report Generation [[paper](https://arxiv.org/pdf/2411.13025)]
-- ReXrank: A Public Leaderboard for AI-Powered Radiology Report Generation [[paper](https://arxiv.org/pdf/2411.15122)][[code](https://rexrank.ai/)]
-- Uncovering Knowledge Gaps in Radiology Report Generation Models through Knowledge Graphs [[paper](https://arxiv.org/pdf/2408.14397)][[code](https://github.com/rajpurkarlab/ReXKG)]
-- LaB-RAG: Label Boosted Retrieval Augmented Generation for Radiology Report Generation [[paper](https://arxiv.org/pdf/2411.16523)]
-- Large Language Model with Region-guided Referring and Grounding for CT Report Generation [[[paper](https://arxiv.org/pdf/2411.15539)]
-- Improving Factuality of 3D Brain MRI Report Generation with Paired Image-domain Retrieval and Text-domain Augmentation [[paper](https://arxiv.org/pdf/2411.15490)]
-- MvKeTR: Chest CT Report Generation with Multi-View Perception and Knowledge Enhancement [[paper](https://arxiv.org/pdf/2411.18309)]
-- MMedPO: Aligning Medical Vision-Language Models with Clinical-Aware  Multimodal Preference Optimization [[paper](https://arxiv.org/pdf/2412.06141)][[code](https://github.com/aiming-lab/MMedPO)]
-- Semantic Consistency-Based Uncertainty Quantification for Factuality in Radiology Report Generation [[paper](https://arxiv.org/pdf/2412.04606)]
-- Foundation Models in Radiology: What, How, When, Why and Why Not [[paper](https://arxiv.org/pdf/2411.18730)]
-- A Generalist Learner for Multifaceted Medical Image Interpretation [[paper](https://arxiv.org/abs/2405.07988)]
-- M4CXR: Exploring Multi-task Potentials of Multi-modal Large Language Models for Chest X-ray Interpretation [[paper](https://arxiv.org/abs/2408.16213)]
-- The Impact of AI Assistance on Radiology Reporting: A Pilot Study Using Simulated AI Draft Reports [[paper](https://arxiv.org/pdf/2412.12042)]
-- DAMPER: A Dual-Stage Medical Report Generation Framework with Coarse-Grained MeSH Alignment and Fine-Grained Hypergraph Matching [[paper](https://arxiv.org/pdf/2412.14535)]
-- X-ray Made Simple: Radiology Report Generation and Evaluation with Layman’s Terms [[paper](https://arxiv.org/pdf/2406.17911v3)][[code](https://github.com/hegehongcha/LaymanRRG)]
-
+- [Executive Overview](#-executive-overview)
+- [System Architecture](#-system-architecture)
+- [Repository Structure](#-repository-structure)
+- [Quickstart: Local Installation](#-quickstart-local-installation)
+- [Quickstart: Kaggle GPU Inference](#-quickstart-kaggle-gpu-inference)
+- [Evidence Stacking Engine (`cxr_evidence`)](#-evidence-stacking-engine-cxr_evidence)
+- [Data Contract & Integrity](#-data-contract--integrity)
+- [Testing & Quality Assurance](#-testing--quality-assurance)
+- [Benchmark Targets & Methodology](#-benchmark-targets--methodology)
+- [Project Roadmap](#-project-roadmap)
+- [License & Clinical Disclaimer](#-license--clinical-disclaimer)
 
 ---
 
-### 2023
-**ICLR'23**
-- Advancing radiograph representation learning with masked record modeling [[paper](https://openreview.net/forum?id=w-x7U26GM7j)][[code](https://github.com/RL4M)]
+## 🚀 Executive Overview
 
-**CVPR'23**
-- KiUT: Knowledge-injected U-Transformer for Radiology Report Generation [[paper](https://ieeexplore.ieee.org/document/10203622)] [[code]]
-- METransformer: Radiology report generation by transformer with multiple learnable expert tokens [[paper](https://openaccess.thecvf.com/content/CVPR2023/html/Wang_METransformer_Radiology_Report_Generation_by_Transformer_With_Multiple_Learnable_Expert_CVPR_2023_paper.html)][[code]]
-- Dynamic Graph Enhanced Contrastive Learning for Chest X-Ray Report Generation [[paper](https://openaccess.thecvf.com/content/CVPR2023/html/Li_Dynamic_Graph_Enhanced_Contrastive_Learning_for_Chest_X-Ray_Report_Generation_CVPR_2023_paper.html)] [[code](https://github.com/mlii0117/DCL)]
-- Interactive and Explainable Region-guided Radiology Report Generation [[paper](https://openaccess.thecvf.com/content/CVPR2023/html/Tanida_Interactive_and_Explainable_Region-Guided_Radiology_Report_Generation_CVPR_2023_paper.html)][[code](https://github.com/ttanida/rgrg)]
+Current Vision-Language Models (VLMs) trained on chest radiographs frequently optimize for text-similarity heuristics (BLEU, CIDEr) rather than clinical accuracy. This produces two major clinical hazards:
+1. **The Normal-Study Penalty**: A single hallucinated finding on a healthy patient severely degrades clinical utility (penalized heavily by metrics like CRIMSON and GREEN).
+2. **The "Knowing–Saying" Gap**: Models often detect subtle radiological signals in their visual latent embeddings, but shared language priors cause the decoder to revert to generic, safe boilerplate.
 
-ICCV'23
-- Unify, Align and Refine: Multi-Level Semantic Alignment for Radiology Report Generation [[paper](https://openaccess.thecvf.com/content/ICCV2023/papers/Li_Unify_Align_and_Refine_Multi-Level_Semantic_Alignment_for_Radiology_Report_ICCV_2023_paper.pdf)]
-
-**ACL'23**
-- ORGAN: Observation-Guided Radiology Report Generation via Tree Reasoning [[paper](https://arxiv.org/abs/2306.06466)] [[code](https://github.com/wjhou/ORGan)]
-
-**EMNLP'23**
-- RECAP: Towards Precise Radiology Report Generation via Dynamic Disease Progression Reasoning [[paper](https://aclanthology.org/2023.findings-emnlp.140/)] [[code](https://github.com/wjhou/Recap)]
-- Normal-Abnormal Decoupling Memory for Medical Report Generation [[paper](https://aclanthology.org/2023.findings-emnlp.131/)] [[code](https://github.com/kzzjk/NADM)]
-- Style-Aware Radiology Report Generation with RadGraph and Few-Shot Prompting [[paper](https://arxiv.org/abs/2310.17811)] [[code]]
-- PhenotypeCLIP: Phenotype-based Contrastive Learning for Medical Imaging Report Generation [[paper](https://aclanthology.org/2023.emnlp-main.989.pdf)]
-
-
-**MICCAI'23**
-- Utilizing Longitudinal Chest X-Rays and Reports to Pre-Fill Radiology Reports [[paper](https://link.springer.com/chapter/10.1007/978-3-031-43904-9_19)] [[code](https://github.com/CelestialShine/Longitudinal-Chest-X-Ray)]
-
-
-**ML4H'23**
-- Pragmatic Radiology Report Generation [[paper](https://proceedings.mlr.press/v225/nguyen23a.html)] [[code](https://github.com/ChicagoHAI/llm_radiology)]
-
-**ICASSP'23**
-- Improving Radiology Report Generation with D 2-Net: When Diffusion Meets Discriminator [[paper](https://ieeexplore.ieee.org/abstract/document/10448326)] [[code]]
-  
-**MedIA'23**
-- Radiology report generation with a learned knowledge base and multi-modal alignment [[paper](https://www.sciencedirect.com/science/article/pii/S1361841523000592)] [[code](https://github.com/LX-doctorAI1/M2KT)]
-
-**TMI'23**
-- Attributed Abnormality Graph Embedding for Clinically Accurate X-Ray Report Generation [[paper](https://ieeexplore.ieee.org/document/10045710)][[code]]
-
-**Patterns'23**
-- Evaluating progress in automatic chest X-ray radiology report generation[[paper](https://www.cell.com/patterns/fulltext/S2666-3899(23)00157-5)][[code](https://github.com/rajpurkarlab/CXR-Report-Metric)]
-
-**TMM'23**
-- From Observation to Concept: A Flexible Multi-view Paradigm for Medical Report Generation [[paper](https://ieeexplore.ieee.org/abstract/document/10356722)] [[code]]
-- Joint Embedding of Deep Visual and Semantic Features for Medical Image Report Generation [[paper](https://ieeexplore.ieee.org/document/9606584)] [[code]]
-
-**Radiology'23**
-- Leveraging GPT-4 for Post Hoc Transformation of Free-text Radiology Reports into Structured Reporting: A Multilingual Feasibility Study [[paper](https://pubs.rsna.org/doi/epdf/10.1148/radiol.230725)]
-
-**Meta-Radiology'23**
-- R2gengpt: Radiology report generation with frozen llms [[paper](https://www.sciencedirect.com/science/article/pii/S2950162823000334#bib4)][[code](https://github.com/wang-zhanyu/R2GenGPT)]
-
-**arXiv papers'23**
-- MAIRA-1: A specialised large multimodal model for radiology report generation [[paper](https://arxiv.org/abs/2311.13668)] [[code]]
-- Longitudinal Data and a Semantic Similarity Reward for Chest X-Ray Report Generation [[paper](https://arxiv.org/abs/2307.09758)][[code](https://github.com/aehrc/cxrmate)]
+**SeeSay** solves this with a decoupled two-tier architecture:
+- **Tier 1 (Clinical Generator)**: Standalone multimodal VLM ([`google/medgemma-1.5-4b-it`](https://huggingface.co/google/medgemma-1.5-4b-it)) generating structured `Findings:` and `Impression:` sections with strict single-study prompt constraints.
+- **Tier 2 (Evidence & Calibration Engine)**: A lightweight machine learning stack (finding-level probes $\to$ multi-channel LightGBM fusion $\to$ held-out sigmoid calibration) that evaluates claim certainty and enforces patient-grouped cross-validation.
 
 ---
 
-### 2022
+## 🏗️ System Architecture
 
-**AAAI'22**
-- Clinical-BERT: Vision-Language Pre-training for Radiograph Diagnosis and Reports Generation [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/20204)] [[code]]
+```mermaid
+flowchart TD
+    subgraph Input["1. Clinical Input"]
+        IMG["Chest Radiograph (PA/AP)\nPNG / JPEG / DICOM"]
+        CTX["Clinical Context / Indication\n(Optional)"]
+    end
 
-**ACL'22**
-- Reinforced Cross-modal Alignment for Radiology Report Generation [[paper](https://aclanthology.org/2022.findings-acl.38/)] [[code](https://github.com/cuhksz-nlp/R2GenRL)]
+    subgraph Tier1["Tier 1: Multimodal Report Generation (cxr_report)"]
+        VAL["Image Validation & Normalization\nEXIF Orientation + SHA-256 Hash"]
+        PROMPT["Structured Report Prompt\n(No-prior constraint, Findings + Impression)"]
+        VLM["MedGemma 1.5 4B\n(Transformers, Single-load Session)"]
+        PARSE["Section Extraction\n(Regex Robust Matcher)"]
+        DRAFT["Draft Report\nFindings + Impression JSONL"]
+    end
 
-**MICCAI'22**
-- A Medical Semantic-Assisted Transformer for Radiographic Report Generation [[paper](https://link.springer.com/chapter/10.1007/978-3-031-16437-8_63)] [[code](https://github.com/wang-zhanyu/MSAT)]
-- CheXRelNet An Anatomy-Aware Model for Tracking Longitudinal Relationships Between Chest X-Rays [[paper](https://link.springer.com/chapter/10.1007/978-3-031-16431-6_55)][[code](https://link.springer.com/chapter/10.1007/978-3-031-16431-6_55)]
+    subgraph Tier2["Tier 2: Evidence Verification & Fusion (cxr_evidence)"]
+        ENC["Frozen Image Features\n(RAD-DINO / Encoder)"]
+        PROBES["Stage 1: Linear Finding Probes\n(Logistic Regression)"]
+        CHANNELS["External Evidence Channels:\n• Normal-bank distance\n• Regional crop scores\n• Independent reader assertions"]
+        STACKER["Stage 2: Shallow LightGBM Stacker\n(80 trees, depth 3, missingness-aware)"]
+        CALIB["Stage 3: Sigmoid Calibrator\n(Held-out calibration patient split)"]
+        PROBS["Calibrated Probabilities\nper Finding Target"]
+    end
 
-**Nature Machine Intelligence'22**
-- Generalized radiograph representation learning via cross-supervision between images and free-text radiology reports [[paper](https://www.nature.com/articles/s42256-021-00425-9)][[code](https://github.com/funnyzhou/REFERS)]
+    subgraph Output["3. Audited Output"]
+        AUDIT["Structured Output & Audit Log\n• Traceable image SHA-256\n• Model revision & precision\n• Findings, Impression, Latency"]
+    end
 
-**MedIA'22**
-- Knowledge matters: Chest radiology report generation with general and specific knowledge [[paper](https://www.sciencedirect.com/science/article/pii/S1361841522001578)] [[code](https://github.com/LX-doctorAI1/GSKET)]
-
-**TMI'22**
-- Automated Radiographic Report Generation Purely on Transformer: A Multicriteria Supervised Approach [[paper](https://ieeexplore.ieee.org/document/9768661)] [[code]]
+    IMG --> VAL --> PROMPT --> VLM --> PARSE --> DRAFT --> AUDIT
+    CTX --> PROMPT
+    IMG --> ENC --> PROBES --> STACKER
+    CHANNELS --> STACKER
+    STACKER --> CALIB --> PROBS --> AUDIT
+```
 
 ---
 
-### 2021
+## 📁 Repository Structure
 
-**ACL'21**
-- Cross-modal Memory Networks for Radiology Report Generation [[paper](https://aclanthology.org/2021.acl-long.459/)] [[code](https://github.com/zhjohnchan/R2GenCMN)]
+```
+radiology/
+├── src/
+│   ├── cxr_report/            # Tier 1: MedGemma generation pipeline
+│   │   ├── images.py          # Pillow loading, EXIF orientation, SHA-256
+│   │   ├── prompts.py         # Versioned prompt configs (Findings/Impression)
+│   │   ├── model.py           # MedGemma single-process loader (FP16 / 4-bit)
+│   │   ├── generator.py       # Chat template, inference mode, truncation detection
+│   │   ├── output.py          # Section parser, atomic JSONL serialization
+│   │   ├── batch.py           # Resumable batch runner with error logging
+│   │   └── cli.py             # CLI: generate, batch, info
+│   └── cxr_evidence/          # Tier 2: Evidence stacking & calibration engine
+│       ├── data.py            # Strict pickle-free .npz data contract
+│       ├── training.py        # Grouped cross-validation, LightGBM, calibration
+│       ├── demo.py            # Synthetic 240-study plumbing fixture
+│       └── cli.py             # CLI: train, demo, predict
+├── notebooks/
+│   └── medgemma_report_generation.py # Production Kaggle GPU script
+├── examples/
+│   └── manifest.jsonl         # Example batch input manifest
+├── tests/
+│   ├── test_report_pipeline.py# Unit & mock tests for cxr_report (18 tests)
+│   └── test_training.py       # Validation, leakage, round-trip tests (8 tests)
+├── docs/
+│   ├── implementation-plan.md # 8-stage engineering specification
+│   └── report-generation-mvp.md # MedGemma generator milestone spec
+├── pyproject.toml             # Setuptools build definition with [generation] extra
+└── README.md
+```
 
-**EMNLP'21**
-- Progressive Transformer-Based Generation of Radiology Reports [[paper](https://arxiv.org/pdf/2102.09777)] [[code](https://github.com/uzh-dqbm-cmi/ARGON)]
-  
-**NAACL'21**
-- Improving Factual Completeness and Consistency of Image-to-Text Radiology Report Generation [[paper](https://aclanthology.org/2021.naacl-main.416/)] [[code](https://github.com/ysmiura/ifcc)]
+---
 
-### 2020
+## ⚡ Quickstart: Local Installation
 
-**AAAI'20**
-- When Radiology Report Generation Meets Knowledge Graph [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/6989)] [[code](https://github.com/xiaosongwang/MIRQI)]
+### Prerequisites
+- Python 3.11+
+- Git
 
-**EMNLP'20**
-- Generating Radiology Reports via Memory-driven Transformer [[paper](https://arxiv.org/abs/2010.16056)] [[code](https://github.com/zhjohnchan/R2Gen)]
+```bash
+# Clone the repository
+git clone https://github.com/ParasKaushal123/SeeSay.git
+cd SeeSay
 
-## Survey
+# Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate       # Linux/macOS
+# .\.venv\Scripts\Activate.ps1   # Windows PowerShell
 
-- A Systematic Review of Deep Learning-based Research on Radiology Report Generation (**arXiv 2311**) [[paper](https://arxiv.org/abs/2311.14199)]
-- A Survey of Deep Learning-based Radiology Report Generation Using Multimodal Data (**arXiv 2405**) [[paper](https://arxiv.org/abs/2405.12833)]
-- Automated Radiology Report Generation: A Review of Recent Advances (**IEEE Reviews in Biomedical Engineering'24**) [[paper](https://ieeexplore.ieee.org/abstract/document/10545538)]
-- From Vision to Text: A Comprehensive Review of Natural Image Captioning in Medical Diagnosis and Radiology Report Generation (**Medical Image Analysis'24**)[[paper](https://www.sciencedirect.com/science/article/pii/S1361841524001890)]
-- Automatic Medical Report Generation: Methods and Applications (**arXiv'2408**) [[paper](https://arxiv.org/pdf/2408.13988)]
-- Automatic medical report generation based on deep learning: A state of the art survey (**Computerized Medical Imaging and Graphics'25**)[[paper](https://www.sciencedirect.com/science/article/pii/S0895611124001630)]
-- A survey of deep-learning-based radiology report generation using multimodal inputs (**Medical Image Analysis'25**)[[paper](https://www.sciencedirect.com/science/article/pii/S1361841525001744#bib1)]
-- Medical radiology report generation: A systematic review of current deep learning methods, trends, and future directions (**Artificial Intelligence in Medicine'25**) [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0933365725001551)]
-- Automatic radiology report generation with deep learning: a comprehensive review of methods and advances (**Artificial Intelligence Review'25**) [[paper](https://link.springer.com/article/10.1007/s10462-025-11337-0)]
-- A Review of Longitudinal Radiology Report Generation: Dataset Composition, Methods, and Performance Evaluation [[paper](https://arxiv.org/pdf/2510.12444v1)]
-- Automatic radiology report generation: a systematic review of emerging AI architectures and multimodal technologies (**Artificial Intelligence Review'26**)  [[paper](https://link.springer.com/article/10.1007/s10462-026-11556-z)]
-- Automated Radiology Report Generation: A Comprehensive Review (**ESWA'26**) [[paper](https://www.sciencedirect.com/science/article/pii/S0957417426022293)]
+# Install package and test dependencies
+pip install -e ".[dev]"
+```
 
-## Dataset
-- MIMIC-CXR-JPG, a large publicly available database of labeled chest radiographs (**MIMIC-CXR**)  [[paper](https://arxiv.org/abs/1901.07042)][[data](https://physionet.org/content/mimic-cxr/2.0.0/)].
-- Preparing a collection of radiology examinations for distribution and retrieval (**IU X-ray**) [[paper](https://academic.oup.com/jamia/article/23/2/304/2572395)][[data](https://openi.nlm.nih.gov/gridquery?q=pneumonia&it=xg&m=1&n=100)].
-- Learning Visual-Semantic Embeddings for Reporting Abnormal Findings on Chest X-rays (**MIMIC-ABN**) [[paper](https://aclanthology.org/2020.findings-emnlp.176/)][[code](https://github.com/nijianmo/chest-xray-cvse)]
-- An efficient but effective writer: Diffusion-based semi-autoregressive transformer for automated radiology report generation (**XRG-COVID-19**) [[paper](https://www.sciencedirect.com/science/article/abs/pii/S1746809423010844)][[data](https://github.com/Report-Generation/XRG-COVID-19)].
-- HistGen: Histopathology Report Generation via Local-Global Feature Encoding and Cross-modal Context Interaction (**HistGen WSI**) [[paper](https://arxiv.org/abs/2403.05396)][[data](https://github.com/dddavid4real/HistGen)].
-- CheXpert Plus: Hundreds of Thousands of Aligned Radiology Texts, Images and Patients (**CheXpert Plus**) [[paper](https://arxiv.org/abs/2405.19538)] [[data](https://stanfordaimi.azurewebsites.net/datasets/5158c524-d3ab-4e02-96e9-6ee9efc110a1)]
-- CXR-PRO: MIMIC-CXR with Prior References Omitted (**CXR-PRO**) [[data](https://www.physionet.org/content/cxr-pro/1.0.0/)]
-- MS-CXR: Making the Most of Text Semantics to Improve Biomedical Vision-Language Processing (**MS-CXR**) [[data](https://physionet.org/content/ms-cxr/0.1/)]
-- EHRXQA: A Multi-Modal Question Answering Dataset for Electronic Health Records with Chest X-ray Images (**EHRXQA**)[[paper](https://neurips.cc/virtual/2023/poster/73600)][[code](https://github.com/baeseongsu/ehrxqa)][[data](https://physionet.org/content/ehrxqa/1.0.0/)]
-- MIMIC-Ext-MIMIC-CXR-VQA: A Complex, Diverse, And Large-Scale Visual Question Answering Dataset for Chest X-ray Images (**MIMIC-Ext-MIMIC-CXR-VQA**)[[code](https://github.com/baeseongsu/mimic-cxr-vqa)][[data](https://physionet.org/content/mimic-ext-mimic-cxr-vqa/1.0.0/MIMIC-Ext-MIMIC-CXR-VQA/)]
-- MS-CXR-T: Learning to Exploit Temporal Structure for Biomedical Vision-Language Processing (**MS-CXR-T**)[[data](https://physionet.org/content/ms-cxr-t/1.0.0/)]
-- CAD-Chest: Comprehensive Annotation of Diseases based on MIMIC-CXR Radiology Report (**CAD-Chest**)[[data](https://physionet.org/content/cad-chest/1.0/)][[paper](https://ieeexplore.ieee.org/abstract/document/10632161)][[code](https://github.com/MengRes/MIMIC-CAD)]
-- VinDr-CXR: An open dataset of chest X-rays with radiologist annotations (**VinDr-CXR**)[[data](https://physionet.org/content/vindr-cxr/1.0.0/)]
-- Chest ImaGenome Dataset (**ImaGenome**) [[data](https://physionet.org/content/chest-imagenome/1.0.0/)]
-- Interpretable medical image Visual Question Answering via multi-modal relationship graph learning (**Medical-CXR-VQA**) [[**MedIA'24**](https://www.sciencedirect.com/science/article/abs/pii/S1361841524002044)][[code](https://github.com/Holipori/Medical-CXR-VQA)]
-- Medical-Diff-VQA: A Large-Scale Medical Dataset for Difference Visual Question Answering on Chest X-Ray Images (**Medical-Diff-VQA**) [[data](https://physionet.org/content/medical-diff-vqa/1.0.0/)][[code](https://github.com/Holipori/MIMIC-Diff-VQA)]
-- ReXPref-Prior: A MIMIC-CXR Preference Dataset for Reducing Hallucinated Prior Exams in Radiology Report Generation (**ReXPref-Prior**)[[data](https://www.physionet.org/content/rexpref-prior/1.0.0/)]
-- An open chest X-ray dataset with benchmarks for automatic radiology report generation in French (**CASIA-CXR**) [**Neurocomputing'24**] [[data](https://www.casia-cxr.net/)][[paper](https://www.sciencedirect.com/science/article/pii/S0925231224012499#aep-article-footnote-id1)]
-- PathMMU: A Massive Multimodal Expert-Level Benchmark for Understanding and Reasoning in Pathology (**WSI-VQA**)[**arXiv'2401**][[paper](https://pathmmu-benchmark.github.io/#/)][[data](https://huggingface.co/datasets/jamessyx/PathMMU)]
-- MIMIC-Eye: Integrating MIMIC Datasets with REFLACX and Eye Gaze for Multimodal Deep Learning Applications (**MIMIC-Eye**)[[data](https://physionet.org/content/mimic-eye-multimodal-datasets/1.0.0/#files-panel)][[code](https://github.com/ChihchengHsieh/MIMIC-Eye)]
-- PadChest-GR: A Bilingual Chest X-ray Dataset for Grounded Radiology Report Generation (**PadChest-GR**)[[data](https://bimcv.cipf.es/bimcv-projects/padchest-gr/)][[paper](https://ai.nejm.org/doi/full/10.1056/AIdbp2401120)]
-- GEMeX: A Large-Scale, Groundable, and Explainable Medical VQA Benchmark for Chest X-ray Diagnosis (**GEMeX**)[[paper](https://arxiv.org/pdf/2411.16778)][[project](https://huggingface.co/datasets/BoKelvin/GEMeX)]
-- Computed-Tomography-Report-Generation-Datasets (CTRG), including CTRG-Brain-263K and CTRG-Chest-548K [[data](https://github.com/tangyuhao2016/CTRG)]
-- Multi-view CXR: A large-scale multi-view benchmark for chest X-ray report generation (**Multi-view CXR**) [[data](https://huggingface.co/datasets/MK-runner/Multi-view-CXR)][[paper](https://arxiv.org/abs/2411.10224)]
-- CheXmask Database: a large-scale dataset of anatomical segmentation masks for chest x-ray images (**CheXmask**)[[data](https://physionet.org/content/chexmask-cxr-segmentation-data/0.4/)]
-- **LLaVA-Rad MIMIC-CXR** [[data](https://physionet.org/content/llava-rad-mimic-cxr-annotation/1.0.0/)]
-- RaDialog Instruct Dataset [[data](https://physionet.org/content/radialog-instruct-dataset/1.1.0/)][[paper](https://arxiv.org/pdf/2311.18681)]
-- **M3D-Cap** [[data](https://huggingface.co/datasets/GoodBaiBai88/M3D-Cap)]
-- **ReXErr-v1**: Clinically Meaningful Chest X-Ray Report Errors Derived from MIMIC-CXR [[data](https://physionet.org/content/rexerr-v1/1.0.0/)]
-- **ReXGradient-160K**: A Large-Scale Publicly Available Dataset of Chest Radiographs with Free-text Reports [[paper](https://arxiv.org/pdf/2505.00228)][[data](https://huggingface.co/datasets/rajpurkarlab/ReXGradient-160K/tree/main)]
-- PARROT: An Open Multilingual Radiology Reports Dataset (**PARROT**) [[paper](https://arxiv.org/abs/2507.22939)][[data](https://github.com/PARROT-reports/PARROT_v1.0)]
-- CXR-LT: Multi-Label Long-Tailed Classification on Chest X-Rays (**CXR-LT**)[[dataset](https://physionet.org/content/cxr-lt-iccv-workshop-cvamd/2.0.0/)]
-- COVID-19 CT dataset (Chinese) [[paper](https://www.semanticscholar.org/paper/Medical-VLBERT%3A-Medical-Visual-Language-BERT-for-CT-Liu-Liao/25c7fa62d85c5d564f0b35471456e4ad4739c582)][[data](https://covid19ct.github.io/)]
-- COV-CTR (Chinese & English) [[data](https://github.com/mlii0117/COV-CTR)]
-- **VinDr-Mammo**: A large-scale benchmark dataset for computer-aided detection and diagnosis in full-field digital mammography [[data](https://physionet.org/content/vindr-mammo/1.0.0/)]
-- **Ultrasound-CLIP**: Semantic-Aware Contrastive Pre-training for Ultrasound Image-Text Understanding [[paper](https://arxiv.org/pdf/2604.01749v1)][[code](https://github.com/mk-runner/CoGaze)][[data](https://huggingface.co/datasets/JJY-0823/US-365K/tree/main)]
-- **Ultrasound Report Generation** with Cross-Modality Feature Alignment via Unsupervised Guidance [[paper](https://arxiv.org/pdf/2406.00644)][[code](https://github.com/LijunRio/Ultrasound-Report-Generation)][[data](https://drive.google.com/file/d/1-Fz9J58ntoO8ZoAEKzm3fxm4jvOWrAuz/view)]
-- WsiCaption: Multiple Instance Generation of Pathology Reports for Gigapixel Whole Slide Images (**PathText**) [[paper](https://arxiv.org/abs/2311.16480)][[code](https://github.com/cpystan/Wsi-Caption)]
+### Run the Synthetic Evidence Pipeline (CPU Demo)
+```bash
+python -m cxr_evidence demo --output artifacts/demo
+```
+This fits finding probes, trains the LightGBM stacker, and runs held-out sigmoid calibration on a 240-study synthetic fixture in **under 1 second**.
 
+---
 
-## Metrics
-- FineRadScore: A Radiology Report Line-by-Line Evaluation Technique Generating Corrections with Severity Scores (**arXiv'2405**) [[paper](https://arxiv.org/pdf/2405.20613)][[code](https://github.com/rajpurkarlab/FineRadScore)]
-- FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long Form Text Generation (**EMNLP'23**) [[paper](https://arxiv.org/abs/2305.14251)][[code](https://github.com/shmsw25/FActScore?tab=readme-ov-file)]
-- DocLens: Multi-aspect Fine-grained Evaluation for Medical Text Generation (**ACL'24**) [[paper](https://arxiv.org/abs/2311.09581)][[code](https://github.com/yiqingxyq/DocLens)]
-- RaTEScore: A Metric for Radiology Report Generation (**EMNLP'24**) [[paper](https://www.medrxiv.org/content/10.1101/2024.06.24.24309405v1)][[code](https://github.com/MAGIC-AI4Med/RaTEScore)][[PyPI](https://pypi.org/project/RaTEScore/)]
-- GREEN: Generative Radiology Report Evaluation and Error Notation [[paper](https://arxiv.org/pdf/2405.03595)][[code](https://github.com/Stanford-AIMI/GREEN)]
-- When Radiology Report Generation Meets Knowledge Graph (**MIRQI**) [[paper](https://ojs.aaai.org/index.php/AAAI/article/view/6989)][[code](https://github.com/xiaosongwang/MIRQI)]
-- Evaluating progress in automatic chest X-ray radiology report generation (**RadCliQ**)[[paper](https://www.cell.com/patterns/fulltext/S2666-3899(23)00157-5)][[code](https://github.com/rajpurkarlab/CXR-Report-Metric)]
-- Evaluating GPT-4 on Impressions Generation in Radiology Reports (**Radiology**)[[paper](https://pubs.rsna.org/doi/full/10.1148/radiol.231259)]
-- ReXamine-Global: A Framework for Uncovering Inconsistencies in Radiology Report Generation Metrics (**arXiv'2408**)[[paper](https://arxiv.org/pdf/2408.16208)]
-- MRScore: Evaluating Medical Report with LLM-Based Reward System (**MICAAI'24**) [[paper](https://link.springer.com/chapter/10.1007/978-3-031-72384-1_27)]
-- ER2Score: LLM-based Explainable and Customizable Metric for Assessing Radiology Reports with Reward-Control Loss (**arXiv'2411**)[[paper](https://arxiv.org/pdf/2411.17301)]
-- FactCheXcker: Mitigating Measurement Hallucinations in Chest X-ray Report Generation Models (**arXiv'2411**)[[paper](https://arxiv.org/pdf/2411.18672)]
-- A clinically accessible small multimodal radiology model and evaluation metric for chest X-ray findings (**CheXprompt**)[[paper](https://www.nature.com/articles/s41467-025-58344-x)][[code](https://github.com/microsoft/chexprompt)]
-- RadReason: Radiology Report Evaluation Metric with Reasons and Sub-Scores (**RadReason'2508**) [[paper](https://arxiv.org/pdf/2508.15464v1)]
-- CREPE: Rapid Chest X-ray Report Evaluation by Predicting Multi-category Error Counts (**EMNLP'25**) [[paper](https://openreview.net/forum?id=gjFuz5jbiJ)][[code](https://github.com/gihuncho/crepe/tree/main)]
--  CRIMSON: A Clinically-Grounded LLM-Based Metric for Generative Radiology Report Evaluation [[paper](https://arxiv.org/pdf/2603.06467)][[code](https://github.com/rajpurkarlab/CRIMSON)]
+## 🌐 Quickstart: Kaggle GPU Inference
 
-## Other Resources
-- Learning to Exploit Temporal Structure for Biomedical Vision–Language Processing (**CVPR'23**) [[paper](https://openaccess.thecvf.com/content/CVPR2023/papers/Bannur_Learning_To_Exploit_Temporal_Structure_for_Biomedical_Vision-Language_Processing_CVPR_2023_paper.pdf)[[code](https://github.com/microsoft/hi-ml/tree/main/hi-ml-multimodal)]
-- Investigating and Mitigating Object Hallucinations in Pretrained Vision-Language (CLIP) Models [[paper](https://arxiv.org/pdf/2410.03176)][[code](https://github.com/Yufang-Liu/clip_hallucination)]
+For generating reports with MedGemma on a free Kaggle GPU (T4 / P100):
 
+### 1. Attach Dataset & Enable Internet
+- Attach the **[`raddar/chest-xrays-indiana-university`](https://www.kaggle.com/datasets/raddar/chest-xrays-indiana-university)** dataset.
+- In Kaggle sidebar: set **Internet $\to$ On** and **Accelerator $\to$ GPU T4 x2**.
 
-## Tools
-- [CXR-Report-Metric](https://github.com/rajpurkarlab/CXR-Report-Metric)
-- [coco-caption](https://github.com/tylin/coco-caption)
-- [f1chexbert](https://pypi.org/project/f1chexbert/)
-- [radgraph](https://pypi.org/project/radgraph/)
-- [mimic-cxr](https://github.com/MIT-LCP/mimic-cxr)
-- [RaTEScore](https://pypi.org/project/RaTEScore/)
-- [torchxrayvision](https://github.com/mlmed/torchxrayvision)
-  
+### 2. Setup & Import (Cell 1)
+```python
+# Clone repo & install
+!rm -rf /kaggle/working/radiology
+!git clone https://github.com/ParasKaushal123/SeeSay.git /kaggle/working/radiology
+!pip install -q -e "/kaggle/working/radiology[generation]"
 
+# Inject src to path and import
+import sys
+sys.path.insert(0, "/kaggle/working/radiology/src")
 
-## Feel free to reach out to me if you find any interesting papers missing.
-email: kangliu422@gmail.com
-WeChat: kangliu422
+from cxr_report.model import ModelInfo, load_medgemma
+from cxr_report.generator import generate_report
+from cxr_report.batch import run_batch, load_manifest
+```
 
-## ⭐ Star Growth
-[![Star History Chart](https://star-history.dera.page/svg?repos=mk-runner/Awesome-Radiology-Report-Generation&type=Date)](https://star-history.dera.page/#mk-runner/Awesome-Radiology-Report-Generation&Date)
+### 3. Load or Reuse Model (Cell 2)
+```python
+# Reuses existing in-memory weights if previously loaded
+if 'model' in globals() and 'processor' in globals():
+    model_info = ModelInfo("google/medgemma-1.5-4b-it", getattr(model.config, "_commit_hash", None),
+                           str(next(model.parameters()).dtype), "auto", False)
+else:
+    model, processor, model_info = load_medgemma("google/medgemma-1.5-4b-it", device_map="auto")
+```
+
+### 4. Resumable Batch Run (Cell 3)
+```python
+from pathlib import Path
+manifest = load_manifest("/kaggle/working/radiology/examples/manifest.jsonl")
+
+stats = run_batch(
+    model=model,
+    processor=processor,
+    model_info=model_info,
+    manifest=manifest,
+    output_path=Path("/kaggle/working/reports/iu_reports.jsonl"),
+    resume=True,
+    max_new_tokens=384,
+)
+print("Batch complete:", stats)
+```
+
+---
+
+## 🔬 Evidence Stacking Engine (`cxr_evidence`)
+
+The evidence stacking pipeline trains without GPU requirements from pre-extracted `.npz` feature archives:
+
+1. **Patient-Grouped Out-of-Fold Probes**: Standardized linear probes fit on image embeddings using `GroupKFold`, ensuring no patient crosses folds.
+2. **Multi-Channel LightGBM Stacker**: Merges probe probabilities, external evidence channels (distance to healthy references, regional crop activations, second reader consensus), explicit missingness flags, and finding IDs.
+3. **Held-Out Sigmoid Calibration**: A disjoint calibration patient split tunes the temperature of output margins to produce reliable confidence scores.
+
+```bash
+# Train on cached features
+python -m cxr_evidence train --data datasets/iu_features.npz --output artifacts/run_v1
+
+# Predict calibrated probabilities on unlabelled inference studies
+python -m cxr_evidence predict --data datasets/iu_inference.npz --model artifacts/run_v1/model.joblib --output artifacts/preds.npz
+```
+
+---
+
+## 🔒 Data Contract & Integrity
+
+The evidence engine enforces a strict, pickle-free `.npz` data schema (`load_dataset`) with zero tolerance for silent leakage:
+
+| Array Key | Shape | Type | Description |
+|---|---|---|---|
+| `study_ids` | `[N]` | String | Unique study identifiers (multi-view aggregated) |
+| `patient_ids` | `[N]` | String | Enforces strict zero patient overlap across splits |
+| `splits` | `[N]` | String | Partition labels: `train`, `calibration`, `validation`, `test` |
+| `image_features` | `[N, D]` | Float32 | Finite frozen encoder representations |
+| `evidence` | `[N, C, E]` | Float32 | Multi-channel features (`healthy__*`, `regional__*`, `reader__*`); NaN allowed for missing |
+| `labels` | `[N, C]` | Int8 | Multi-label ground truth: `1` (positive), `0` (negative), `-1` (unmentioned/uncertain) |
+| `label_source` | Scalar | String | Explicit provenance: `report_derived`, `image_adjudicated`, or `synthetic` |
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+Comprehensive automated test suite executed via `pytest`:
+
+```powershell
+pytest -v
+```
+
+```text
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.1.1
+rootdir: D:\projects\radiology
+configfile: pyproject.toml
+collected 26 items
+
+tests\test_report_pipeline.py ..................                         [ 69%]
+tests\test_training.py ........                                          [100%]
+
+============================= 26 passed in 11.50s =============================
+```
+
+### Coverage Highlights:
+- **Leakage Prevention**: Asserts ValueError is raised if a patient identifier appears in multiple splits.
+- **Data Integrity**: Validates shapes, rejects non-finite features, empty arrays, or duplicate studies.
+- **Section Parsing**: Handles `Findings:`, `FINDINGS:`, `Impression:`, missing sections, and malformed spacing.
+- **Resume Idempotency**: Asserts batch processor skips completed studies without re-running model generation.
+- **Mocked CI**: Image generation tested with mocked tensors; no GPU required for test runner.
+
+---
+
+## 🎯 Benchmark Targets & Methodology
+
+The project targets official benchmarks on the **[ReXrank Leaderboard](https://rexrank.ai/)**:
+
+- **Target Dataset**: IU X-Ray (Official 296 validation / 590 test split)
+- **Primary Metrics**:
+  - **GREEN**: Evaluator measuring clinical correctness via language model error category alignment.
+  - **CRIMSON**: Asymmetric clinical risk score heavily penalizing false positives on normal studies.
+  - **RadGraph**: Micro-averaged factual F1 on clinical entities and relations.
+- **Reference Baselines**:
+  - UniRG-CXR Published Baseline: **0.469 GREEN** (ReXGradient Private Test) / **0.664 GREEN** (IU Findings).
+
+> *Note: Published scores are external baselines from Microsoft Research and Rajpurkar Lab; local measurements will be logged as evaluated.*
+
+---
+
+## 🗺️ Project Roadmap
+
+- [x] **Milestone 1**: Lightweight evidence stacking pipeline (`cxr_evidence`) with patient-grouped folds, LightGBM, and calibration.
+- [x] **Milestone 2**: MedGemma reporting pipeline (`cxr_report`) with single-image generation, section extraction, and resumable batch processing.
+- [x] **Milestone 3**: Successful 50-study smoke batch on real IU X-ray radiographs in Kaggle GPU environment.
+- [ ] **Milestone 4**: Automated extraction of frozen image embeddings (RAD-DINO / MedGemma vision encoder) across the official 590 IU test studies.
+- [ ] **Milestone 5**: Rule-based and calibrated text edit policy (`reports/editor.py`) to prune hallucinated assertions on high-confidence normal studies.
+- [ ] **Milestone 6**: Official GREEN and CRIMSON paired evaluation against unedited MedGemma baselines.
+
+---
+
+## 📄 License & Clinical Disclaimer
+
+This repository is distributed under the [MIT License](LICENSE).
+
+> ⚠️ **CLINICAL NOTICE**: This software is an academic research prototype and is **NOT** a certified medical device. It is not approved by the FDA, EMA, or any regulatory authority for diagnostic or clinical decision-making. Outputs must not be used for patient care without licensed physician evaluation.
+
+[Back to top](#top)

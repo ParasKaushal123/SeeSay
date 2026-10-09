@@ -1,22 +1,89 @@
+# ==========================================
+# Bytecode, Cache & Build Artifacts
+# ==========================================
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
 .pytest_cache/
 *.egg-info/
-.venv/
-venv/
 build/
 dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+parts/
+var/
+sdist/
+wheels/
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ==========================================
+# Internal Research & Planning Docs
+# (Kept locally, not published to GitHub)
+# ==========================================
+research/
+docs/
+IMPLEMENTATION.md
+*.draft.md
+
+# ==========================================
+# Model Checkpoints & Weights
+# ==========================================
+checkpoints/
+models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+*.joblib
+*.pickle
+*.pkl
+
+# ==========================================
+# Datasets, Features & Generated Reports
+# ==========================================
+datasets/
+data/
+artifacts/
+reports/
+*.npz
+*.h5
+*.hdf5
+*.parquet
+*.feather
+*.dcm
+
+# ==========================================
+# Secrets, Credentials & Local Config
+# ==========================================
 .env
 .env.*
 !.env.example
-artifacts/
-datasets/
-checkpoints/
-research/data/
-*.joblib
-*.npz
-*.safetensors
-research
-IMPLEMENTATION.md
-README.md
-reports/
+*.pem
+*.key
+*.token
+*.credentials
+
+# ==========================================
+# IDE & Operating System Files
+# ==========================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
