@@ -18,3 +18,5 @@ research/data/
 *.safetensors
 research
 IMPLEMENTATION.md
+README.md
+reports/

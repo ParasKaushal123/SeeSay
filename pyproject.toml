@@ -16,9 +16,17 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10"]
+generation = [
+    "torch",
+    "transformers",
+    "accelerate",
+    "bitsandbytes",
+    "pillow",
+]
 
 [project.scripts]
 cxr-evidence = "cxr_evidence.cli:main"
+cxr-report = "cxr_report.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
